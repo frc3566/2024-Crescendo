@@ -74,18 +74,18 @@ public class Vision extends SubsystemBase {
         // );
     }
 
-    public Optional<Trajectory> getTrajectory(PhotonTrackedTarget target) {
+    public Trajectory getTrajectory(PhotonTrackedTarget target) {
         TrajectoryConfig config = Constants.Trajectory.CONFIG;
         double coefficient = Constants.Trajectory.COEFFICIENT;
         Transform3d transform = target.getBestCameraToTarget().plus(Constants.Vision.ROBOT_TO_CAMERA.inverse());
         Translation2d end = transform.getTranslation().toTranslation2d().minus(new Translation2d(0.5, 0)).times(coefficient);
 
         /* Pose2d start, List<Translation2D> pathPoints, Pose2d end, config */
-        return Optional.of(TrajectoryGenerator.generateTrajectory(
+        return TrajectoryGenerator.generateTrajectory(
             new Pose2d(0, 0, new Rotation2d(0)),
             List.of(end.div(2)),
             new Pose2d(end, transform.getRotation().toRotation2d()),
             config
-        ));
+        );
     }
 }

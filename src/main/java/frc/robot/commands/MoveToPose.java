@@ -1,5 +1,9 @@
 package frc.robot.commands;
 
+import java.util.Optional;
+
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -34,10 +38,11 @@ public class MoveToPose extends Command {
     @Override
     public void initialize() {
         System.out.println("Waiting for trajectory...");
-        
-        vision.getTrajectory().ifPresentOrElse(trajectory -> {
-            System.out.println("Running vision trajectory");
 
+        vision.getAprilTag().ifPresentOrElse(target -> {
+            System.out.println("Running vision trajectory");
+            var trajectory = vision.getTrajectory(target);
+            
             var thetaController = new ProfiledPIDController(
                 Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -57,7 +62,7 @@ public class MoveToPose extends Command {
             cancelCommand = false;
         }, () -> {
             cancelCommand = true;
-            DriverStation.reportWarning("Unable to generate vision trajectory", false);
+            DriverStation.reportWarning("No vision target", false);
         });
     }
     
