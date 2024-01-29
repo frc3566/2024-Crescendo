@@ -1,10 +1,24 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import java.io.IOException;
+import java.util.Arrays;
+
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -131,6 +145,48 @@ public final class Constants {
   public static class Shooter {
       public static int Left_Motor_Id = 10;
       public static int Right_Motor_Id = 9;
+  }
+
+  public static class Vision {
+    public static final String APRIL_TAG_CAMERA_NAME = "Limelight1";
+
+    public static final double CAMERA_HEIGHT_METERS = 0;
+    public static final double APRILTAG_HEIGHT_METERS = 0.6;
+    public static final double CAMERA_PITCH_RADIANS = Math.toRadians(0);
+
+    public static final Transform3d ROBOT_TO_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(14.25), 0, 0),
+        new Rotation3d(0, 0, 0));
+
+    /* Testing only, replace with provided april tag field layout */
+    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = new AprilTagFieldLayout(
+        /* Center of each set of driver stations */
+        Arrays.asList(
+            new AprilTag(0,
+                new Pose3d(new Pose2d(FieldConstants.LENGTH, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(180)))),
+            new AprilTag(1, new Pose3d(new Pose2d(0.0, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(0.0))))),
+        FieldConstants.LENGTH,
+        FieldConstants.WIDTH);
+
+    public static AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT() throws IOException {
+      return AprilTagFieldLayout.loadFromResource(
+          AprilTagFields.kDefaultField.toString());
+    }
+  }
+    
+  /* LENGTH > WIDTH */
+  public static class FieldConstants {
+    public static final double LENGTH = Units.inchesToMeters(54*12 + 3.25); 
+    public static final double WIDTH = Units.inchesToMeters(26*12 + 3.5);
+  }
+
+  public static final class Trajectory {
+    public static final TrajectoryConfig CONFIG = new TrajectoryConfig(
+        Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+        Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        .setKinematics(Constants.Swerve.swerveKinematics);
+
+    public static final double COEFFICIENT = 1.2;
   }
 
   public static final class AutoConstants {
