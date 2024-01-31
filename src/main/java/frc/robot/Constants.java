@@ -64,7 +64,7 @@ public final class Constants {
     public static final double angleKFF = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.0003824;
+    public static final double driveKP = 0.0004024;
     public static final double driveKI = 0.0;
     public static final double driveKD = 0;
     public static final double driveKFF = 0.0;
@@ -73,7 +73,7 @@ public final class Constants {
     public static final double driveKS = 0.3156;
     public static final double driveKV = 3.02865;
     // public static final double driveKA = 0.2401975;
-    public static final double driveKA = 0.00;
+    public static final double driveKA = 0.05;
 
     /* Drive Motor Conversion Factors */
     public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
@@ -187,14 +187,14 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final double kMaxSpeedMetersPerSecond = 3; //TODO: decreasing gives more time for rotation
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3; 
+    public static final double kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI; //TODO: increasing makes rotation faster, was pi
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 2 * Math.PI; //TODO: increasing makes rotation faster, was pi
 
     public static final double kPXController = 1;
     public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
+    public static final double kPThetaController = 1.1; //TODO: tune this, was 1
 
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(

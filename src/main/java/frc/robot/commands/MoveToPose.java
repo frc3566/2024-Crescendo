@@ -1,12 +1,18 @@
 package frc.robot.commands;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -28,20 +34,33 @@ public class MoveToPose extends Command {
     Swerve s_Swerve;
     Vision vision;
 
-    public MoveToPose(Swerve s_Swerve, Vision vision) {
+    public MoveToPose(Swerve s_Swerve) {
         this.s_Swerve = s_Swerve;
-        this.vision = vision;
+        // this.vision = vision;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(s_Swerve, vision);
+        // addRequirements(s_Swerve, vision);
+        addRequirements(s_Swerve);
     }
 
     @Override
     public void initialize() {
         System.out.println("Waiting for trajectory...");
 
-        vision.getAprilTag().ifPresentOrElse(target -> {
+        // vision.getAprilTag().ifPresentOrElse(target -> {
             System.out.println("Running vision trajectory");
-            var trajectory = vision.getTrajectory(target);
+            // var trajectory = vision.getTrajectory(target);
+
+            TrajectoryConfig config =
+            new TrajectoryConfig(
+                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                .setKinematics(Constants.Swerve.swerveKinematics);
+            Trajectory trajectory =
+            TrajectoryGenerator.generateTrajectory(
+                new Pose2d(0, 0, new Rotation2d(0)),
+                List.of(new Translation2d(0.5, 0)),
+                new Pose2d(1.0, 0, new Rotation2d(90)),
+                config);
             
             var thetaController = new ProfiledPIDController(
                 Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
@@ -60,10 +79,10 @@ public class MoveToPose extends Command {
             s_Swerve.resetOdometry(trajectory.getInitialPose());
             swerveControllerCommand.schedule();
             cancelCommand = false;
-        }, () -> {
-            cancelCommand = true;
-            DriverStation.reportWarning("No vision target", false);
-        });
+        // }, () -> {
+        //     cancelCommand = true;
+        //     DriverStation.reportWarning("No vision target", false);
+        // });
     }
     
     @Override
