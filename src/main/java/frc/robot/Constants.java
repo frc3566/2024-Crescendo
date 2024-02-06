@@ -144,6 +144,11 @@ public final class Constants {
       public static int Right_Motor_Id = 9;
   }
 
+  public static class Intake {
+      public static int Left_Motor_Id = 0;
+      public static int Right_Motor_Id = 0;
+  }
+
   public static class Vision {
     public static final String APRIL_TAG_CAMERA_NAME = "Limelight1";
 
