@@ -41,51 +41,42 @@ public class Vision extends SubsystemBase {
     private PhotonCamera apriltagCamera;
     private PhotonPoseEstimator poseEstimator;
 
-    private static enum Pipeline {
-        AprilTag,
-        ReflectiveTape
-    };
-
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
         poseEstimator = new PhotonPoseEstimator(
-            Constants.Vision.APRIL_TAG_FIELD_LAYOUT,
-            PoseStrategy.LOWEST_AMBIGUITY, 
-            apriltagCamera, 
+            Constants.Vision.APRIL_TAG_FIELD_LAYOUT(),
+            PoseStrategy.LOWEST_AMBIGUITY,
+            apriltagCamera,
             Constants.Vision.ROBOT_TO_CAMERA
         );
     }
 
     public Optional<PhotonTrackedTarget> getAprilTag() {
         var result = apriltagCamera.getLatestResult();
-        if (!result.hasTargets()) {
-            System.out.println("No targets in range\n");
+
+        if (!result.hasTargets())
             return Optional.empty();
-        }
 
         return Optional.of(result.getBestTarget());
-
-        // /* Traditional distance using formula */
-        // double dist = PhotonUtils.calculateDistanceToTargetMeters(
-        //     VisionConstants.CAMERA_HEIGHT_METERS, 
-        //     VisionConstants.APRILTAG_HEIGHT_METERS, 
-        //     VisionConstants.CAMERA_PITCH_RADIANS, 
-        //     Units.degreesToRadians(target.getPitch())
-        // );
     }
 
-    public Trajectory getTrajectory(PhotonTrackedTarget target) {
-        TrajectoryConfig config = Constants.Trajectory.CONFIG;
-        double coefficient = Constants.Trajectory.COEFFICIENT;
-        Transform3d transform = target.getBestCameraToTarget().plus(Constants.Vision.ROBOT_TO_CAMERA.inverse());
-        Translation2d end = transform.getTranslation().toTranslation2d().minus(new Translation2d(0.5, 0)).times(coefficient);
+    public Pose2d getPoseTo(PhotonTrackedTarget target) {
+        final double metersInFrontOfTarget = 0.5;
 
-        /* Pose2d start, List<Translation2D> pathPoints, Pose2d end, config */
-        return TrajectoryGenerator.generateTrajectory(
-            new Pose2d(0, 0, new Rotation2d(0)),
-            List.of(end.div(2)),
-            new Pose2d(end, transform.getRotation().toRotation2d()),
-            config
-        );
+        Transform3d transform = target.getBestCameraToTarget();
+        Translation2d end = transform.getTranslation().toTranslation2d()
+            .minus(new Translation2d(metersInFrontOfTarget, 0));
+
+        return new Pose2d(end, Rotation2d.fromDegrees(target.getYaw()));
     }
+
+    // public Transform3d getMultiAprilTag() {
+    //     var result = apriltagCamera.getLatestResult();
+    //     if (result.getMultiTagResult().estimatedPose.isPresent) {
+    //         Transform3d fieldToCamera = result.getMultiTagResult().estimatedPose.best;
+    //         return fieldToCamera;
+    //     }
+
+    //     return null;
+    // }
 }
