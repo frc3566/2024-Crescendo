@@ -8,19 +8,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-    public CANSparkMax left, right;
-    public double ltrigger, rtrigger;
+    public CANSparkMax intakeMotor;
+    public double rtrigger;
 
     public Intake() {
-        left = new CANSparkMax(Constants.Intake.Left_Motor_Id, MotorType.kBrushless);
-        right = new CANSparkMax(Constants.Intake.Right_Motor_Id, MotorType.kBrushless);
-        left.setInverted(false);
-        right.setInverted(true);
+        intakeMotor = new CANSparkMax(Constants.Intake.Intake_Motor_Id, MotorType.kBrushless);
+        intakeMotor.setInverted(false);
     }
 
     public void setPower(double power) {
-        left.set(power);
-        right.set(power);
+        intakeMotor.set(power);
     }
 
     // public void setVoltage(double voltage) {
@@ -35,7 +32,6 @@ public class Intake extends SubsystemBase {
     // }
 
     public void stop() {
-        left.stopMotor();
-        right.stopMotor();
+        intakeMotor.stopMotor();
     }
 }
