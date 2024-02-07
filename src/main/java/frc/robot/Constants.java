@@ -141,7 +141,11 @@ public final class Constants {
 
   public static class Shooter {
       public static int Left_Motor_Id = 10;
-      public static int Right_Motor_Id = 9;
+      public static int Right_Motor_Id = 11;
+  }
+
+  public static class Intake{
+      public static int Intake_Motor_Id = 9;
   }
 
   public static class Vision {

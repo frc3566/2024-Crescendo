@@ -37,7 +37,8 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Shooter s_Shooter = new Shooter();
+    // private final Shooter s_Shooter = new Shooter();
+    private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -53,9 +54,17 @@ public class RobotContainer {
             )
         );
 
-        s_Shooter.setDefaultCommand(
-            new Shoot(
-                s_Shooter, 
+        // s_Shooter.setDefaultCommand(
+        //     new Shoot(
+        //         s_Shooter, 
+        //         () -> driver.getRawAxis(leftTriggerID),
+        //         () -> driver.getRawAxis(rightTriggerID)
+        //     )
+        // );
+
+        s_Intake.setDefaultCommand(
+            new IntakeControl(
+                s_Intake,
                 () -> driver.getRawAxis(leftTriggerID),
                 () -> driver.getRawAxis(rightTriggerID)
             )
