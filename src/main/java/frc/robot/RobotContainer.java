@@ -37,7 +37,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Shooter s_Shooter = new Shooter();
+    // private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
