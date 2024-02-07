@@ -60,6 +60,9 @@ public class SecondInTeam extends SequentialCommandGroup{
             swerveControllerCommand1,
             new InstantCommand(() -> s_Shooter.setPower(1)),
             new WaitCommand(3),
+            new InstantCommand(() -> s_Intake.setPower(1)),
+            new WaitCommand(1),
+            new InstantCommand(() -> s_Intake.stop()),
             new InstantCommand(() -> s_Shooter.stop())
         );
 

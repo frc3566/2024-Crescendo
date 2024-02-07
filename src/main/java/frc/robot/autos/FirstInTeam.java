@@ -59,12 +59,18 @@ public class FirstInTeam extends SequentialCommandGroup{
             new InstantCommand(() -> s_Swerve.resetOdometry(Trajectory1.getInitialPose())),
             new InstantCommand(() -> s_Shooter.setPower(1)),
             new WaitCommand(3),
+            new InstantCommand(() -> s_Intake.setPower(1)),
+            new WaitCommand(1),
+            new InstantCommand(() -> s_Intake.stop()),
             new InstantCommand(() -> s_Shooter.stop()),
             new InstantCommand(() -> s_Intake.setPower(1)),
             swerveControllerCommand1,
             new InstantCommand(() -> s_Intake.stop()),
             new InstantCommand(() -> s_Shooter.setPower(1)),
             new WaitCommand(3),
+            new InstantCommand(() -> s_Intake.setPower(1)),
+            new WaitCommand(1),
+            new InstantCommand(() -> s_Intake.stop()),
             new InstantCommand(() -> s_Shooter.stop())
         );
 
