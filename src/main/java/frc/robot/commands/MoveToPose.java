@@ -1,101 +1,219 @@
+// Copyright (c) 2023 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.commands;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint;
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import java.util.List;
+import java.util.function.Supplier;
 import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Vision;
-
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+import frc.robot.subsystems.*;
+import frc.lib.CustomTrajectoryGenerator;
+import frc.lib.RotationSequence;
+import frc.lib.Waypoint;
+import frc.lib.CustomHolonomicDriveController;
 
 public class MoveToPose extends Command {
-    /** Moves the robot to the desired position */
 
-    // Main defines;
-    public static final double coefficient = 1.2;
-    private boolean cancelCommand;
-    private SwerveControllerCommand swerveControllerCommand;
-    Swerve s_Swerve;
-    Vision vision;
+  private static boolean supportedRobot = true;
+  private static double maxVelocityMetersPerSec;
+  private static double maxAccelerationMetersPerSec2;
+  private static double maxCentripetalAccelerationMetersPerSec2;
 
-    public MoveToPose(Swerve s_Swerve) {
-        this.s_Swerve = s_Swerve;
-        // this.vision = vision;
-        // Use addRequirements() here to declare subsystem dependencies.
-        // addRequirements(s_Swerve, vision);
-        addRequirements(s_Swerve);
+  private final PIDController xController = new PIDController(0.0, 0.0, 0.0);
+  private final PIDController yController = new PIDController(0.0, 0.0, 0.0);
+  private final PIDController thetaController = new PIDController(0.0, 0.0, 0.0);
+
+  private final CustomHolonomicDriveController customHolonomicDriveController =
+      new CustomHolonomicDriveController(xController, yController, thetaController);
+
+  private final Swerve s_Swerve;
+  private final Timer timer = new Timer();
+
+  private List<Waypoint> waypoints;
+  private Supplier<List<Waypoint>> waypointsSupplier = null;
+  private Supplier<List<TrajectoryConstraint>> constraintsSupplier = null;
+  private Supplier<Double> startVelocitySupplier = null;
+  private CustomTrajectoryGenerator customGenerator = new CustomTrajectoryGenerator();
+
+  static {
+    switch (Constants.getRobot()) {
+      case ROBOT_2023C:
+      case ROBOT_2023P:
+        maxVelocityMetersPerSec = Units.inchesToMeters(160.0);
+        maxAccelerationMetersPerSec2 = Units.inchesToMeters(95.0);
+        maxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(150.0);
+
+        driveKp.initDefault(6.0);
+        driveKd.initDefault(0.0);
+        turnKp.initDefault(8.0);
+        turnKd.initDefault(0.0);
+        break;
+      case ROBOT_SIMBOT:
+        maxVelocityMetersPerSec = Units.inchesToMeters(160.0);
+        maxAccelerationMetersPerSec2 = Units.inchesToMeters(105.0);
+        maxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(150.0);
+
+        driveKp.initDefault(2.5);
+        driveKd.initDefault(0.0);
+        turnKp.initDefault(7.0);
+        turnKd.initDefault(0.0);
+        break;
+      default:
+        supportedRobot = false;
+        break;
+    }
+  }
+
+  /** Creates a DriveTrajectory command with a dynamic set of waypoints. */
+  public MoveToPose(Swerve s_Swerve, Supplier<List<Waypoint>> waypointsSupplier) {
+    this.s_Swerve = s_Swerve;
+    this.waypointsSupplier = waypointsSupplier;
+  }
+
+  /** Creates a DriveTrajectory command with a dynamic set of waypoints and constraints. */
+  public MoveToPose(
+      Swerve swerve,
+      Supplier<List<Waypoint>> waypointsSupplier,
+      Supplier<List<TrajectoryConstraint>> constraintsSupplier,
+      Supplier<Double> startVelocitySupplier) {
+    this.s_Swerve = s_Swerve;
+    addRequirements(s_Swerve);
+    this.waypointsSupplier = waypointsSupplier;
+    this.constraintsSupplier = constraintsSupplier;
+    this.startVelocitySupplier = startVelocitySupplier;
+  }
+
+  /** Creates a DriveTrajectory command with a static set of waypoints. */
+  public MoveToPose(Swerve s_Swerve, List<Waypoint> waypoints) {
+    this.s_Swerve = s_Swerve;
+    this.waypoints = waypoints;
+  }
+
+  /** Creates a DriveTrajectory command with a static set of waypoints and constraints. */
+  public MoveToPose(
+      Swerve s_Swerve,
+      List<Waypoint> waypoints,
+      List<TrajectoryConstraint> constraints,
+      double startVelocity) {
+    this.s_Swerve = s_Swerve;
+    addRequirements(s_Swerve);
+    generate(waypoints, constraints, startVelocity, true);
+  }
+
+  /** Generates the trajectory. */
+  private void generate(
+      List<Waypoint> waypoints,
+      List<TrajectoryConstraint> constraints,
+      double startVelocity,
+      boolean alertOnFail) {
+    // Set up trajectory configuration
+    TrajectoryConfig config =
+        new TrajectoryConfig(maxVelocityMetersPerSec, maxAccelerationMetersPerSec2)
+            .setKinematics(new SwerveDriveKinematics(s_Swerve.getModuleTranslations()))
+            .setStartVelocity(startVelocity)
+            .setEndVelocity(0.0)
+            .addConstraint(
+                new CentripetalAccelerationConstraint(maxCentripetalAccelerationMetersPerSec2))
+            .addConstraints(constraints);
+
+    // Generate trajectory
+    customGenerator = new CustomTrajectoryGenerator(); // Reset generator
+    try {
+      customGenerator.generate(config, waypoints);
+    } catch (Exception exception) {
+      if (supportedRobot && alertOnFail) {
+        exception.printStackTrace();
+      }
+    }
+  }
+
+  @Override
+  public void initialize() {
+    // Generate trajectory if supplied
+    if (waypointsSupplier != null || constraintsSupplier != null) {
+      generate(
+          waypointsSupplier.get(), constraintsSupplier.get(), startVelocitySupplier.get(), false);
     }
 
-    @Override
-    public void initialize() {
-        System.out.println("Waiting for trajectory...");
+    // Log trajectory
 
-        // vision.getAprilTag().ifPresentOrElse(target -> {
-            System.out.println("Running vision trajectory");
-            // var trajectory = vision.getTrajectory(target);
+    // Reset all controllers
+    timer.reset();
+    timer.start();
+    xController.reset();
+    yController.reset();
+    thetaController.reset();
 
-            TrajectoryConfig config =
-            new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
-            Trajectory trajectory =
-            TrajectoryGenerator.generateTrajectory(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                List.of(new Translation2d(0.5, 0)),
-                new Pose2d(1.0, 0, new Rotation2d(90)),
-                config);
-            
-            var thetaController = new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
-                thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    // Reset PID gains
+    xController.setP(driveKp.get());
+    xController.setD(driveKd.get());
+    yController.setP(driveKp.get());
+    yController.setD(driveKd.get());
+    thetaController.setP(turnKp.get());
+    thetaController.setD(turnKd.get());
+  }
 
-            swerveControllerCommand = new SwerveControllerCommand(
-                trajectory,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-            
-            s_Swerve.resetOdometry(trajectory.getInitialPose());
-            swerveControllerCommand.schedule();
-            cancelCommand = false;
-        // }, () -> {
-        //     cancelCommand = true;
-        //     DriverStation.reportWarning("No vision target", false);
-        // });
-    }
-    
-    @Override
-    public void execute() {
-        if (!cancelCommand && swerveControllerCommand != null && swerveControllerCommand.isFinished())
-            cancelCommand = true;
+  @Override
+  public void execute() {
+    // Update from tunable numbers
+    if (driveKd.hasChanged(hashCode())
+        || driveKp.hasChanged(hashCode())
+        || turnKd.hasChanged(hashCode())
+        || turnKp.hasChanged(hashCode())) {
+      xController.setP(driveKp.get());
+      xController.setD(driveKd.get());
+      yController.setP(driveKp.get());
+      yController.setD(driveKd.get());
+      thetaController.setP(turnKp.get());
+      thetaController.setD(turnKd.get());
     }
 
-    public void end(boolean interrupted) {
-        if (swerveControllerCommand == null || !swerveControllerCommand.isFinished())
-            swerveControllerCommand.cancel();
+    // Exit if trajectory generation failed
+    if (customGenerator.getDriveTrajectory().getStates().size() <= 1) {
+      return;
     }
-    public boolean isFinished() {
-        return cancelCommand;
-    }
+
+    // Get setpoint
+    Trajectory.State driveState =
+        AllianceFlipUtil.apply(customGenerator.getDriveTrajectory().sample(timer.get()));
+    RotationSequence.State holonomicRotationState =
+        AllianceFlipUtil.apply(customGenerator.getHolonomicRotationSequence().sample(timer.get()));
+    Logger.getInstance()
+        .recordOutput(
+            "Odometry/TrajectorySetpoint",
+            new Pose2d(driveState.poseMeters.getTranslation(), holonomicRotationState.position));
+
+    // Calculate velocity
+    ChassisSpeeds nextDriveState =
+        customHolonomicDriveController.calculate(
+            s_Swerve.getPose(), driveState, holonomicRotationState);
+    s_Swerve.runVelocity(nextDriveState);
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    s_Swerve.off();
+  }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return timer.hasElapsed(customGenerator.getDriveTrajectory().getTotalTimeSeconds());
+  }
 }
