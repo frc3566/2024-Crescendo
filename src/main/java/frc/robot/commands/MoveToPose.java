@@ -42,7 +42,7 @@ public class MoveToPose extends Command {
   private final CustomHolonomicDriveController customHolonomicDriveController =
       new CustomHolonomicDriveController(xController, yController, thetaController);
 
-  private final Swerve s_Swerve;
+  private Swerve s_Swerve = new Swerve();
   private final Timer timer = new Timer();
 
   private List<Waypoint> waypoints;
@@ -51,34 +51,13 @@ public class MoveToPose extends Command {
   private Supplier<Double> startVelocitySupplier = null;
   private CustomTrajectoryGenerator customGenerator = new CustomTrajectoryGenerator();
 
-  static {
-    switch (Constants.getRobot()) {
-      case ROBOT_2023C:
-      case ROBOT_2023P:
-        maxVelocityMetersPerSec = Units.inchesToMeters(160.0);
-        maxAccelerationMetersPerSec2 = Units.inchesToMeters(95.0);
-        maxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(150.0);
+  private final double driveKp = Constants.Swerve.driveKP;
+  private final double driveKi = Constants.Swerve.driveKI;
+  private final double driveKd = Constants.Swerve.driveKD;
 
-        driveKp.initDefault(6.0);
-        driveKd.initDefault(0.0);
-        turnKp.initDefault(8.0);
-        turnKd.initDefault(0.0);
-        break;
-      case ROBOT_SIMBOT:
-        maxVelocityMetersPerSec = Units.inchesToMeters(160.0);
-        maxAccelerationMetersPerSec2 = Units.inchesToMeters(105.0);
-        maxCentripetalAccelerationMetersPerSec2 = Units.inchesToMeters(150.0);
-
-        driveKp.initDefault(2.5);
-        driveKd.initDefault(0.0);
-        turnKp.initDefault(7.0);
-        turnKd.initDefault(0.0);
-        break;
-      default:
-        supportedRobot = false;
-        break;
-    }
-  }
+  private final double turnKp = Constants.Swerve.angleKP;
+  private final double turnKi = Constants.Swerve.angleKI;
+  private final double turnKd = Constants.Swerve.angleKD;
 
   /** Creates a DriveTrajectory command with a dynamic set of waypoints. */
   public MoveToPose(Swerve s_Swerve, Supplier<List<Waypoint>> waypointsSupplier) {
@@ -161,28 +140,24 @@ public class MoveToPose extends Command {
     thetaController.reset();
 
     // Reset PID gains
-    xController.setP(driveKp.get());
-    xController.setD(driveKd.get());
-    yController.setP(driveKp.get());
-    yController.setD(driveKd.get());
-    thetaController.setP(turnKp.get());
-    thetaController.setD(turnKd.get());
+    xController.setP(driveKp);
+    xController.setD(driveKd);
+    yController.setP(driveKp);
+    yController.setD(driveKd);
+    thetaController.setP(turnKp);
+    thetaController.setD(turnKd);
   }
 
   @Override
   public void execute() {
-    // Update from tunable numbers
-    if (driveKd.hasChanged(hashCode())
-        || driveKp.hasChanged(hashCode())
-        || turnKd.hasChanged(hashCode())
-        || turnKp.hasChanged(hashCode())) {
-      xController.setP(driveKp.get());
-      xController.setD(driveKd.get());
-      yController.setP(driveKp.get());
-      yController.setD(driveKd.get());
-      thetaController.setP(turnKp.get());
-      thetaController.setD(turnKd.get());
-    }
+    
+    xController.setP(driveKp);
+    xController.setD(driveKd);
+    yController.setP(driveKp);
+    yController.setD(driveKd);
+    thetaController.setP(turnKp);
+    thetaController.setD(turnKd);
+    
 
     // Exit if trajectory generation failed
     if (customGenerator.getDriveTrajectory().getStates().size() <= 1) {
@@ -194,10 +169,6 @@ public class MoveToPose extends Command {
         AllianceFlipUtil.apply(customGenerator.getDriveTrajectory().sample(timer.get()));
     RotationSequence.State holonomicRotationState =
         AllianceFlipUtil.apply(customGenerator.getHolonomicRotationSequence().sample(timer.get()));
-    Logger.getInstance()
-        .recordOutput(
-            "Odometry/TrajectorySetpoint",
-            new Pose2d(driveState.poseMeters.getTranslation(), holonomicRotationState.position));
 
     // Calculate velocity
     ChassisSpeeds nextDriveState =

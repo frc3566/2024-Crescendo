@@ -127,6 +127,15 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public Translation2d[] getModuleTranslations() {
+        return new Translation2d[] {
+          new Translation2d(Constants.Swerve.trackWidth / 2.0, Constants.Swerve.trackWidth / 2.0),
+          new Translation2d(Constants.Swerve.trackWidth / 2.0, -Constants.Swerve.trackWidth / 2.0),
+          new Translation2d(-Constants.Swerve.trackWidth / 2.0, Constants.Swerve.trackWidth / 2.0),
+          new Translation2d(-Constants.Swerve.trackWidth / 2.0, -Constants.Swerve.trackWidth / 2.0)
+        };
+      }
+
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  

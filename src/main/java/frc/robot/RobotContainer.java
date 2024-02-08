@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.List;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.lib.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,6 +40,10 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
+
+    /* Trajectory Waypoints*/
+    private final List<Waypoint> waypoints = null;
+
     // private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -73,7 +79,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        moveToPose.onTrue(new MoveToPose(s_Swerve));
+        moveToPose.onTrue(new MoveToPose(s_Swerve, waypoints));
     }
 
     /**
