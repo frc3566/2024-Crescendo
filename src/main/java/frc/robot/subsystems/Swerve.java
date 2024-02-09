@@ -24,6 +24,16 @@ public class Swerve extends SubsystemBase {
     public AHRS gyro;
     public double facing;
 
+    private boolean isCharacterizing = false;
+    private ChassisSpeeds setpoint = new ChassisSpeeds();
+    private SwerveModuleState[] lastSetpointStates =
+        new SwerveModuleState[] {
+          new SwerveModuleState(),
+          new SwerveModuleState(),
+          new SwerveModuleState(),
+          new SwerveModuleState()
+        };
+
     public Swerve() {
         gyro = new AHRS(Constants.Swerve.navXPort);
         // gyro.calibrate(); // goofy aah deprecation
@@ -145,10 +155,41 @@ public class Swerve extends SubsystemBase {
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
+
+        var setpointTwist =
+          new Pose2d()
+              .log(
+                  new Pose2d(
+                      setpoint.vxMetersPerSecond * Constants.Swerve.loopPeriodSeconds,
+                      setpoint.vyMetersPerSecond * Constants.Swerve.loopPeriodSeconds,
+                      new Rotation2d(setpoint.omegaRadiansPerSecond * Constants.Swerve.loopPeriodSeconds)));
+        var adjustedSpeeds =
+            new ChassisSpeeds(
+              setpointTwist.dx / Constants.Swerve.loopPeriodSeconds,
+              setpointTwist.dy / Constants.Swerve.loopPeriodSeconds,
+              setpointTwist.dtheta / Constants.Swerve.loopPeriodSeconds);
+        SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(adjustedSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, Constants.Swerve.maxLinearSpeed);
+
+      // Set to last angles if zero
+        if (adjustedSpeeds.vxMetersPerSecond == 0.0
+            && adjustedSpeeds.vyMetersPerSecond == 0.0
+            && adjustedSpeeds.omegaRadiansPerSecond == 0) {
+            for (int i = 0; i < 4; i++) {
+              setpointStates[i] = new SwerveModuleState(0.0, lastSetpointStates[i].angle);
+            }
+        }
+        lastSetpointStates = setpointStates;
+
+        // Send setpoints to modules
+        SwerveModuleState[] optimizedStates = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            optimizedStates[i] = mSwerveMods[i].runSetpoint(setpointStates[i]);
+        }
     }
 
-    public void runVelocity(ChassisSpeeds nextDriveState) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'runVelocity'");
-    }
+    public void runVelocity(ChassisSpeeds speeds) {
+        isCharacterizing = false;
+        setpoint = speeds;
+      }
 }
