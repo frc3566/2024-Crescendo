@@ -37,7 +37,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    // private final Shooter s_Shooter = new Shooter();
+    private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
@@ -92,6 +92,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+        return new FirstInTeam(s_Swerve, s_Shooter, s_Intake);
     }
 }
