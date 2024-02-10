@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
+//Middle starting position
+
 public class FirstInTeam extends SequentialCommandGroup{
     public FirstInTeam(Swerve s_Swerve, Shooter s_Shooter, Intake s_Intake) {
 

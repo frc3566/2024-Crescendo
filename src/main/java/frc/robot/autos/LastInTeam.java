@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
+//Side starting position
+
 public class LastInTeam extends SequentialCommandGroup{
     public LastInTeam(Swerve s_Swerve){
         TrajectoryConfig config =
