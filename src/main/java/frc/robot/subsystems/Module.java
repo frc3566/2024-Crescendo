@@ -18,7 +18,9 @@ import frc.robot.Constants;
 
 public class Module {
   private final ModuleIO io;
+  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private final int index;
+  
 
   private static final double wheelRadius =
       Constants.Swerve.wheelDiameter / 2;

@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    public Module[] modules
+    private final Module[] modules = new Module[4];
     public AHRS gyro;
     public double facing;
 
@@ -46,6 +46,13 @@ public class Swerve extends SubsystemBase {
             new SwerveModule(2, Constants.Swerve.Mod2.constants),
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
+
+        modules = new Module[] {
+            modules[0] = new Module(flModuleIO, 0);
+            modules[1] = new Module(frModuleIO, 1);
+            modules[2] = new Module(blModuleIO, 2);
+            modules[3] = new Module(brModuleIO, 3);
+        }
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
