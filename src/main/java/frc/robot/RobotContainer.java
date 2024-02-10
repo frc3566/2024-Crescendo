@@ -33,11 +33,15 @@ public class RobotContainer {
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton resetRobot = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
+
+    private final JoystickButton RB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton LB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Shooter s_Shooter = new Shooter();
+    // private final Shooter s_Shooter = new Shooter();
     // private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -52,14 +56,15 @@ public class RobotContainer {
                 () -> robotCentric.getAsBoolean()
             )
         );
+        s_Swerve.resetModulesToAbsolute();
 
-        s_Shooter.setDefaultCommand(
-            new Shoot(
-                s_Shooter, 
-                () -> driver.getRawAxis(leftTriggerID),
-                () -> driver.getRawAxis(rightTriggerID)
-            )
-        );
+        // s_Shooter.setDefaultCommand(
+        //     new Shoot(
+        //         s_Shooter, 
+        //         () -> driver.getRawAxis(leftTriggerID),
+        //         () -> driver.getRawAxis(rightTriggerID)
+        //     )
+        // );
 
         configureButtonBindings();
     }
@@ -74,6 +79,12 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         moveToPose.onTrue(new MoveToPose(s_Swerve));
+        resetRobot.onTrue(new Reset(s_Swerve));
+        robotCentric.onTrue(new MoveToPose90(s_Swerve));
+        // RB.onTrue(new ChangekP(s_Swerve, 0.5));
+        // LB.onTrue(new ChangekP(s_Swerve,-0.5));
+        RB.onTrue(new InstantCommand(()-> s_Swerve.changePID(0.5)));
+        LB.onTrue(new InstantCommand(()-> s_Swerve.changePID(-0.5)));
     }
 
     /**

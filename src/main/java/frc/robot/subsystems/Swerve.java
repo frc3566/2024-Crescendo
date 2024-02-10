@@ -23,6 +23,7 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public AHRS gyro;
     public double facing;
+    public double kPnum = 2.0;
 
     public Swerve() {
         gyro = new AHRS(Constants.Swerve.navXPort);
@@ -39,7 +40,7 @@ public class Swerve extends SubsystemBase {
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
          */
-        Timer.delay(3.0);
+        Timer.delay(1.0);
         resetModulesToAbsolute();
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
@@ -76,6 +77,7 @@ public class Swerve extends SubsystemBase {
     }    
 
     public Pose2d getPose() {
+        System.out.println("Pose: "+ swerveOdometry.getPoseMeters());
         return swerveOdometry.getPoseMeters();
     }
 
@@ -102,6 +104,30 @@ public class Swerve extends SubsystemBase {
     public void zeroGyro(){
         gyro.zeroYaw();
         facing = 0;
+    }
+
+    public double getPID(double distance) {
+        double coef = 0;
+        if (distance < 1) {
+            coef = (1-distance) * (1-distance) * 0.25;  
+            coef += 1.2;
+        }
+        if (distance >= 1) {
+            coef = -1 * distance * (0.85 - ((Math.pow(distance, 4) - 1) * 0.0023));
+            if (coef <= -2)
+                coef = -1.99;
+        }
+        else if (distance >= 3) {
+            coef = -1.99;
+        }
+        double processed = kPnum + coef;
+        System.out.println("kP for " +distance+ " IS: " + processed);
+        return processed;
+    }
+
+    public void changePID(double change) {
+        kPnum += change;
+        System.out.println("kP SET TO: " + kPnum);
     }
 
     public void off(){

@@ -70,10 +70,10 @@ public final class Constants {
     public static final double driveKFF = 0.0;
 
     /* Drive Motor Characterization Values */
-    public static final double driveKS = 0.3156;
+    public static final double driveKS = 0.4156;
     public static final double driveKV = 3.02865;
-    // public static final double driveKA = 0.2401975;
-    public static final double driveKA = 0.05;
+    // public static final double driveKA = 0.0401975;
+    public static final double driveKA = 0.02;
 
     /* Drive Motor Conversion Factors */
     public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
@@ -187,14 +187,14 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3; //TODO: decreasing gives more time for rotation
+    public static final double kMaxSpeedMetersPerSecond = 3; 
     public static final double kMaxAccelerationMetersPerSecondSquared = 3; 
-    public static final double kMaxAngularSpeedRadiansPerSecond = 2 * Math.PI; //TODO: increasing makes rotation faster, was pi
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 2 * Math.PI; //TODO: increasing makes rotation faster, was pi
+    public static final double kMaxAngularSpeedRadiansPerSecond = 4.85 * Math.PI; //Working Num: 4.85
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared =  4.7 * Math.PI; //Working Num: 4.85
 
     public static final double kPXController = 1;
     public static final double kPYController = 1;
-    public static final double kPThetaController = 1.1; //TODO: tune this, was 1
+    public static final double kPThetaController = 4; //Don't Use
 
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(

@@ -24,7 +24,7 @@ import frc.robot.subsystems.Vision;
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-public class MoveToPose extends Command {
+public class MoveToPose90 extends Command {
     /** Moves the robot to the desired position */
 
     // Main defines;
@@ -34,7 +34,7 @@ public class MoveToPose extends Command {
     Swerve s_Swerve;
     Vision vision;
 
-    public MoveToPose(Swerve s_Swerve) {
+    public MoveToPose90(Swerve s_Swerve) {
         this.s_Swerve = s_Swerve;
         // this.vision = vision;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -59,11 +59,11 @@ public class MoveToPose extends Command {
             TrajectoryGenerator.generateTrajectory(
                 new Pose2d(0, 0, new Rotation2d(0)),
                 List.of(),
-                new Pose2d(2, 0, Rotation2d.fromDegrees(45)),
+                new Pose2d(2.5, 0, Rotation2d.fromDegrees(90)),
                 config);
             System.out.println(trajectory.getTotalTimeSeconds());
             var thetaController = new ProfiledPIDController(
-                s_Swerve.getPID(2), 0.5 , 0.08, Constants.AutoConstants.kThetaControllerConstraints);
+                s_Swerve.getPID(2.5), 0.5, 0.08, Constants.AutoConstants.kThetaControllerConstraints);
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
             swerveControllerCommand = new SwerveControllerCommand(
