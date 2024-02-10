@@ -2,6 +2,8 @@ package frc.robot;
 
 import java.io.IOException;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -37,7 +39,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Shooter s_Shooter = new Shooter();
+    // private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
@@ -82,7 +84,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        moveToPose.onTrue(new MoveToPose(s_Swerve));
+        moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
     }
 
     /**
@@ -92,6 +94,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new FirstInTeam(s_Swerve, s_Shooter, s_Intake);
+        return new NewAuto(s_Swerve, s_Intake);
     }
 }

@@ -31,10 +31,12 @@ public class MoveToPose extends Command {
     public static final double coefficient = 1.2;
     private boolean cancelCommand;
     private SwerveControllerCommand swerveControllerCommand;
+    private Pose2d pose;
     Swerve s_Swerve;
     Vision vision;
 
-    public MoveToPose(Swerve s_Swerve) {
+    public MoveToPose(Swerve s_Swerve, Pose2d pose) {
+        this.pose = pose;
         this.s_Swerve = s_Swerve;
         // this.vision = vision;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -55,15 +57,18 @@ public class MoveToPose extends Command {
                     Constants.AutoConstants.kMaxSpeedMetersPerSecond,
                     Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
                 .setKinematics(Constants.Swerve.swerveKinematics);
+            if (pose.getX() < 0) {
+                config.setReversed(true);
+            }
             Trajectory trajectory =
             TrajectoryGenerator.generateTrajectory(
                 new Pose2d(0, 0, new Rotation2d(0)),
-                List.of(new Translation2d(0.5, 0)),
-                new Pose2d(1.0, 0, new Rotation2d(90)),
+                List.of(),
+                new Pose2d(-1, 0, new Rotation2d(0)),
                 config);
             
             var thetaController = new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+                s_Swerve.getPID(Math.sqrt(Math.pow(pose.getX(), 2) + Math.pow(pose.getY(), 2))), 0.5 , 0.08, Constants.AutoConstants.kThetaControllerConstraints);
                 thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
             swerveControllerCommand = new SwerveControllerCommand(

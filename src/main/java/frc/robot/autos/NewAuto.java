@@ -28,7 +28,19 @@ public class NewAuto extends SequentialCommandGroup{
 
         addCommands(
             // new InstantCommand(() -> s_Shooter.setPower(1)),
-            new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0)))
+            new InstantCommand(() -> s_Intake.setPower(0.5)),
+            new WaitCommand(1),
+            new InstantCommand(() -> s_Intake.stop()),
+            // new InstantCommand(() -> s_Shooter.stop()),
+            new InstantCommand(() -> s_Intake.setPower(0.5)),
+            new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))),
+            new InstantCommand(() -> s_Intake.stop()),
+            // new InstantCommand(() -> s_Shooter.setPower(1)),
+            new WaitCommand(3),
+            new InstantCommand(() -> s_Intake.setPower(1)),
+            new WaitCommand(1),
+            new InstantCommand(() -> s_Intake.stop())
+            // new InstantCommand(() -> s_Shooter.stop())
         );
     }
 }
