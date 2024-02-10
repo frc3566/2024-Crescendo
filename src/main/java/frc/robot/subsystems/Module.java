@@ -20,26 +20,25 @@ public class Module {
   private final ModuleIO io;
   private final int index;
 
-  private static final LoggedTunableNumber wheelRadius =
-      new LoggedTunableNumber("Drive/Module/WheelRadius");
-  private static final LoggedTunableNumber driveKp =
-      new LoggedTunableNumber("Drive/Module/DriveKp");
-  private static final LoggedTunableNumber driveKd =
-      new LoggedTunableNumber("Drive/Module/DriveKd");
-  private static final LoggedTunableNumber driveKs =
-      new LoggedTunableNumber("Drive/Module/DriveKs");
-  private static final LoggedTunableNumber driveKv =
-      new LoggedTunableNumber("Drive/Module/DriveKv");
-  private static final LoggedTunableNumber turnKp = new LoggedTunableNumber("Drive/Module/TurnKp");
-  private static final LoggedTunableNumber turnKd = new LoggedTunableNumber("Drive/Module/TurnKd");
+  private static final double wheelRadius =
+      Constants.Swerve.wheelDiameter / 2;
+  private static final double driveKp =
+      Constants.Swerve.driveKP;
+  private static final double driveKd =
+      Constants.Swerve.driveKD;
+  private static final double driveKs =
+      Constants.Swerve.driveKS;
+  private static final double driveKv =
+      Constants.Swerve.driveKV;
+  private static final double turnKp = Constants.Swerve.angleKP;
+  private static final double turnKd = Constants.Swerve.angleKD;
 
   private SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
   private final PIDController driveFeedback =
-      new PIDController(0.0, 0.0, 0.0, Constants.loopPeriodSecs);
+      new PIDController(0.0, 0.0, 0.0, Constants.Swerve.loopPeriodSeconds);
   private final PIDController turnFeedback =
-      new PIDController(0.0, 0.0, 0.0, Constants.loopPeriodSecs);
-  }
-
+      new PIDController(0.0, 0.0, 0.0, Constants.Swerve.loopPeriodSeconds);
+  
   public Module(ModuleIO io, int index) {
     System.out.println("[Init] Creating Module " + Integer.toString(index));
     this.io = io;
@@ -51,7 +50,6 @@ public class Module {
   /** Updates inputs and checks tunable numbers. */
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.getInstance().processInputs("Drive/Module" + Integer.toString(index), inputs);
 
     // Update controllers if tunable numbers have changed
     if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
@@ -81,7 +79,7 @@ public class Module {
     optimizedState.speedMetersPerSecond *= Math.cos(turnFeedback.getPositionError());
 
     // Run drive controller
-    double velocityRadPerSec = optimizedState.speedMetersPerSecond / wheelRadius.get();
+    double velocityRadPerSec = optimizedState.speedMetersPerSecond / (Constants.Swerve.wheelDiameter / 2);
     io.setDriveVoltage(
         driveFeedforward.calculate(velocityRadPerSec)
             + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
@@ -117,12 +115,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * wheelRadius.get();
+    return inputs.drivePositionRad * wheelRadius;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * wheelRadius.get();
+    return inputs.driveVelocityRadPerSec * wheelRadius;
   }
 
   /** Returns the module position (turn angle and drive position). */
@@ -139,9 +137,6 @@ public class Module {
   public double getCharacterizationVelocity() {
     return inputs.driveVelocityRadPerSec;
   }
+}
 
   /** Returns the drive wheel radius. */
-  public static double getWheelRadius() {
-    return wheelRadius.get();
-  }
-}
