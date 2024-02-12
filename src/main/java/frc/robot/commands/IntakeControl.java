@@ -11,7 +11,7 @@ public class IntakeControl extends Command{
     private Intake s_Intake;
     private DoubleSupplier lTrigger, rTrigger;
 
-    public IntakeControl(Intake s_Intake, DoubleSupplier lTrigger, DoubleSupplier rTrigger) {
+    public IntakeControl(Intake s_Intake, Shooter s_Shooter, DoubleSupplier lTrigger, DoubleSupplier rTrigger) {
 //   public IntakeControl(Intake s_Intake, Shooter s_Shooter, DoubleSupplier lTrigger, DoubleSupplier rTrigger) {
         this.s_Intake = s_Intake;
         // this.s_Shooter = s_Shooter;
