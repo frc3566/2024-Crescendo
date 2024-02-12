@@ -82,8 +82,8 @@ public class MoveToPose extends Command {
                 s_Swerve);
             
             s_Swerve.resetOdometry(trajectory.getInitialPose());
+            // cancelCommand = false;
             swerveControllerCommand.schedule();
-            cancelCommand = false;
         // }, () -> {
         //     cancelCommand = true;
         //     DriverStation.reportWarning("No vision target", false);
@@ -92,15 +92,16 @@ public class MoveToPose extends Command {
     
     @Override
     public void execute() {
-        if (!cancelCommand && swerveControllerCommand != null && swerveControllerCommand.isFinished())
-            cancelCommand = true;
+        // if (swerveControllerCommand.isFinished())
+        //     cancelCommand = true;
     }
 
     public void end(boolean interrupted) {
-        if (swerveControllerCommand == null || !swerveControllerCommand.isFinished())
-            swerveControllerCommand.cancel();
+        // if (swerveControllerCommand == null || !swerveControllerCommand.isFinished())
+        //     swerveControllerCommand.cancel();
+        System.out.println("ended");
     }
-    public boolean isFinished() {
-        return cancelCommand;
-    }
+    // public boolean isFinished() {
+    //     return cancelCommand;
+    // }
 }
