@@ -27,6 +27,10 @@ public class IntakeAndHold extends Command {
         /* if (sensor detects note) {
             end(false);
         } */
+
+        // if(s_Intake.getSensor()){
+        //     end(false);
+        // }
     }
 
     @Override
@@ -37,5 +41,11 @@ public class IntakeAndHold extends Command {
         /* if (!interrupted) {
             make sure note is in intake and not touching shooter flywheels
         } */
+        
+        // if(!interrupted){
+        //     while(s_Intake.getSensor()){ 
+        //         s_Intake.setPower(-0.01);
+        //     }
+        // }
     }
 }

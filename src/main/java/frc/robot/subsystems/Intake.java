@@ -4,20 +4,26 @@ import frc.robot.Constants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-
+    public DigitalInput sensor;
     public CANSparkMax intakeMotor;
     public double rtrigger;
 
     public Intake() {
+        sensor = new DigitalInput(0); //Change Port Number
         intakeMotor = new CANSparkMax(Constants.Intake.Intake_Motor_Id, MotorType.kBrushless);
         intakeMotor.setInverted(false);
     }
 
     public void setPower(double power) {
         intakeMotor.set(power);
+    }
+
+    public boolean getSensor() {
+        return sensor.get();
     }
 
     // public void setVoltage(double voltage) {
