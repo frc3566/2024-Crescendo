@@ -43,7 +43,7 @@ public class MoveToPose extends Command {
   private final CustomHolonomicDriveController customHolonomicDriveController =
       new CustomHolonomicDriveController(xController, yController, thetaController);
 
-  private Swerve s_Swerve = new Swerve();
+  private Swerve s_Swerve = new Swerve(null, null, null, null);
   private final Timer timer = new Timer();
 
   private List<Waypoint> waypoints;

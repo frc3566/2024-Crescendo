@@ -15,10 +15,11 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
+import frc.robot.subsystems.ModuleIO.ModuleIOInputs;
 
 public class Module {
   private final ModuleIO io;
-  private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+  private final ModuleIOInputs inputs = new ModuleIOInputs();
   private final int index;
   
 
@@ -54,15 +55,15 @@ public class Module {
     io.updateInputs(inputs);
 
     // Update controllers if tunable numbers have changed
-    if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
-      driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
-    }
-    if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
-      turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
-    }
-    if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
-      driveFeedforward = new SimpleMotorFeedforward(driveKs.get(), driveKv.get());
-    }
+    // if (driveKp.hasChanged(hashCode()) || driveKd.hasChanged(hashCode())) {
+    //   driveFeedback.setPID(driveKp.get(), 0.0, driveKd.get());
+    // }
+    // if (turnKp.hasChanged(hashCode()) || turnKd.hasChanged(hashCode())) {
+    //   turnFeedback.setPID(turnKp.get(), 0.0, turnKd.get());
+    // }
+    // if (driveKs.hasChanged(hashCode()) || driveKv.hasChanged(hashCode())) {
+    //   driveFeedforward = new SimpleMotorFeedforward(driveKs.get(), driveKv.get());
+    // }
   }
 
   /**

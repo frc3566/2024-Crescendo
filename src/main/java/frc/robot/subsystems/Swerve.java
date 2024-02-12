@@ -21,9 +21,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
-    private final Module[] modules = new Module[4];
+    private Module[] modules = new Module[4];
     public AHRS gyro;
     public double facing;
+    private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(getModuleTranslations());
 
     private boolean isCharacterizing = false;
     private ChassisSpeeds setpoint = new ChassisSpeeds();
@@ -35,7 +36,7 @@ public class Swerve extends SubsystemBase {
           new SwerveModuleState()
         };
 
-    public Swerve() {
+    public Swerve(ModuleIO flModuleIO, ModuleIO frModuleIO, ModuleIO blModuleIO, ModuleIO brModuleIO) {
         gyro = new AHRS(Constants.Swerve.navXPort);
         // gyro.calibrate(); // goofy aah deprecation
         zeroGyro();
@@ -48,11 +49,11 @@ public class Swerve extends SubsystemBase {
         };
 
         modules = new Module[] {
-            modules[0] = new Module(flModuleIO, 0);
-            modules[1] = new Module(frModuleIO, 1);
-            modules[2] = new Module(blModuleIO, 2);
-            modules[3] = new Module(brModuleIO, 3);
-        }
+            modules[0] = new Module(flModuleIO, 0),
+            modules[1] = new Module(frModuleIO, 1),
+            modules[2] = new Module(blModuleIO, 2),
+            modules[3] = new Module(brModuleIO, 3)
+        };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
          * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
@@ -192,7 +193,7 @@ public class Swerve extends SubsystemBase {
         // Send setpoints to modules
         SwerveModuleState[] optimizedStates = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
-            optimizedStates[i] = mSwerveMods[i].runSetpoint(setpointStates[i]);
+            optimizedStates[i] = modules[i].runSetpoint(setpointStates[i]);
         }
     }
 
