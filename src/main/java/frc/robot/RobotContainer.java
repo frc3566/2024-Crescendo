@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -36,6 +37,13 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
+
+    private final POVButton DPadUp = new POVButton(driver, 0);
+    private final POVButton DPadDown = new POVButton(driver, 180);
+    private final POVButton DPadRight = new POVButton(driver, 90);
+    private final POVButton DPadLeft = new POVButton(driver, 270);
+
+    private Command testCommand;
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -84,7 +92,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
+        // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
+
+        DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(45))));
+        DPadDown.onTrue(new InstantCommand(() -> testCommand.cancel()));
+        // DPadLeft.onTrue(testCommand = new DriveToPose(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(0))));
+        // DPadRight.onTrue(new InstantCommand(() -> testCommand.cancel()));
     }
 
     /**
