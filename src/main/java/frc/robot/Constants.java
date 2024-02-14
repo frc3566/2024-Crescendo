@@ -156,7 +156,7 @@ public final class Constants {
     public static final double CAMERA_PITCH_RADIANS = Math.toRadians(0);
 
     public static final Transform3d ROBOT_TO_CAMERA = new Transform3d(
-        new Translation3d(Units.inchesToMeters(14.25), 0, 0),
+        new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(0.375), Units.inchesToMeters(12.75)),
         new Rotation3d(0, 0, 0));
 
     /* Testing only, replace with provided april tag field layout */
