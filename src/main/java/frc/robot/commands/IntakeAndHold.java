@@ -12,6 +12,7 @@ public class IntakeAndHold extends Command {
 
     private final double intakeSpeed = 0.5;
     private final double shooterReverseSpeed = -0.3;
+    private final double intakeReverseSpeed = -0.1;
 
     public IntakeAndHold(Intake s_Intake, Shooter s_Shooter) {
         this.s_Intake = s_Intake;
@@ -28,13 +29,20 @@ public class IntakeAndHold extends Command {
             end(false);
         } */
 
-        // if(s_Intake.getSensor()){
-        //     end(false);
-        // }
+        if(s_Intake.getSensor()){
+            end(false);
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
+
+        if(!interrupted){
+            if(s_Intake.getSensor()){ 
+                s_Intake.setPower(-0.1);
+            }
+        }
+
         s_Intake.stop();
         s_Shooter.stop();
 
@@ -42,10 +50,6 @@ public class IntakeAndHold extends Command {
             make sure note is in intake and not touching shooter flywheels
         } */
         
-        // if(!interrupted){
-        //     while(s_Intake.getSensor()){ 
-        //         s_Intake.setPower(-0.01);
-        //     }
-        // }
+        
     }
 }
