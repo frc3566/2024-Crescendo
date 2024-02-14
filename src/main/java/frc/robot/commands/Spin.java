@@ -49,7 +49,7 @@ public class Spin extends Command {
     @Override
     public void execute() {
         Pose2d currentPose = s_Swerve.getPose();
-        System.out.println(currentPose);
+        System.out.println("Spin: " + currentPose);
 
         double thetaVelocity = thetaController.atGoal() ? 0.0 : 
             thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
