@@ -35,6 +35,7 @@ public class RobotContainer {
 
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton reset = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
 
@@ -92,6 +93,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        reset.onTrue(new Reset(s_Swerve));
         // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
 
         DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(45))));

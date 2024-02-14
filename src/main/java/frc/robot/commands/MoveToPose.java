@@ -101,7 +101,7 @@ public class MoveToPose extends Command {
         //     swerveControllerCommand.cancel();
         System.out.println("ended");
     }
-    // public boolean isFinished() {
-    //     return cancelCommand;
-    // }
+    public boolean isFinished() {
+        return true;
+    }
 }
