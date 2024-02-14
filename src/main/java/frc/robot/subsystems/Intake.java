@@ -31,6 +31,14 @@ public class Intake extends SubsystemBase {
     //     right.setIdleMode(sparkMode);
     // }
 
+    public void takeIn(){
+        intakeMotor.set(1);
+    }
+
+    public void eject(){
+        intakeMotor.set(-1);
+    }
+
     public void stop() {
         intakeMotor.stopMotor();
     }

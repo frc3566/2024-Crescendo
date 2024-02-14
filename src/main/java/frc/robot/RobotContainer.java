@@ -30,6 +30,9 @@ public class RobotContainer {
     private final int leftTriggerID = XboxController.Axis.kLeftTrigger.value;
     private final int rightTriggerID = XboxController.Axis.kRightTrigger.value;
 
+    private final JoystickButton RB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton LB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -37,7 +40,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    // private final Shooter s_Shooter = new Shooter();
+    private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
@@ -54,21 +57,21 @@ public class RobotContainer {
             )
         );
 
-        // s_Shooter.setDefaultCommand(
-        //     new Shoot(
-        //         s_Shooter, 
-        //         () -> driver.getRawAxis(leftTriggerID),
-        //         () -> driver.getRawAxis(rightTriggerID)
-        //     )
-        // );
-
-        s_Intake.setDefaultCommand(
-            new IntakeControl(
-                s_Intake,
+        s_Shooter.setDefaultCommand(
+            new Shoot(
+                s_Shooter, 
                 () -> driver.getRawAxis(leftTriggerID),
                 () -> driver.getRawAxis(rightTriggerID)
             )
         );
+
+        // s_Intake.setDefaultCommand(
+        //     new IntakeControl(
+        //         s_Intake,
+        //         () -> driver.getRawAxis(leftBumperID),
+        //         () -> driver.getRawAxis(rightBumperID)
+        //     )
+        // );
 
         configureButtonBindings();
     }
@@ -83,6 +86,10 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         moveToPose.onTrue(new MoveToPose(s_Swerve));
+        RB.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
+        LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
     }
 
     /**
