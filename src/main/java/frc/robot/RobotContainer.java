@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
+import frc.robot.commands.intake.IntakeControl;
+import frc.robot.commands.swerve.Reset;
+import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.swerve.pid.Drive;
+import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.subsystems.*;
 
 /**

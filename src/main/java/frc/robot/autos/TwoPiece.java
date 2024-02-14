@@ -5,11 +5,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-
-import frc.robot.commands.Drive;
-import frc.robot.commands.IntakeTest;
-import frc.robot.commands.PrimeAndShoot;
-import frc.robot.commands.Shoot;
+import frc.robot.commands.intake.IntakeTest;
+import frc.robot.commands.shooter.PrimeAndShoot;
+import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.swerve.pid.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
