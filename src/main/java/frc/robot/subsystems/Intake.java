@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
     }
 
     public boolean getSensor() {
-        return sensor.get();
+        return sensor.get(); //Return 0 if object is closer than the set distance
     }
 
     // public void setVoltage(double voltage) {

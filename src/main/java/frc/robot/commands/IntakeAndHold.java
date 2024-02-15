@@ -29,7 +29,7 @@ public class IntakeAndHold extends Command {
             end(false);
         } */
 
-        if(s_Intake.getSensor()){
+        if(!s_Intake.getSensor()){
             end(false);
         }
     }
@@ -37,11 +37,11 @@ public class IntakeAndHold extends Command {
     @Override
     public void end(boolean interrupted) {
 
-        if(!interrupted){
-            if(s_Intake.getSensor()){ 
-                s_Intake.setPower(-0.1);
-            }
-        }
+        // if(!interrupted){
+        //     if(s_Intake.getSensor()){ 
+        //         s_Intake.setPower(intakeReverseSpeed);
+        //     }
+        // }
 
         s_Intake.stop();
         s_Shooter.stop();
