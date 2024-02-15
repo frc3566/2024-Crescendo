@@ -36,8 +36,8 @@ public class Drive extends Command {
     public void initialize() {
         isRunning = true;
 
-        this.xController = new PIDController(Constants.AutoConstants.kPXController, 0, 0);
-        this.yController = new PIDController(Constants.AutoConstants.kPYController, 0, 0);
+        this.xController = new PIDController(Constants.AutoConstants.kPXController, 0.5, 0);
+        this.yController = new PIDController(Constants.AutoConstants.kPYController, 0.5, 0);
         this.driveController = new ProfiledPIDController(Constants.AutoConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared
         ));
