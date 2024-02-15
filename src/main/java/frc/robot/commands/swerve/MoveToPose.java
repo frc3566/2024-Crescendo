@@ -48,59 +48,51 @@ public class MoveToPose extends Command {
     public void initialize() {
         System.out.println("Waiting for trajectory...");
 
-        // vision.getAprilTag().ifPresentOrElse(target -> {
-            System.out.println("Running vision trajectory");
-            // var trajectory = vision.getTrajectory(target);
+        System.out.println("Running vision trajectory");
+        // var trajectory = vision.getTrajectory(target);
 
-            TrajectoryConfig config =
-            new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                .setKinematics(Constants.Swerve.swerveKinematics);
-            if (pose.getX() < 0) {
-                config.setReversed(true);
-            }
-            Trajectory trajectory =
-            TrajectoryGenerator.generateTrajectory(
-                new Pose2d(0, 0, new Rotation2d(0)),
-                List.of(),
-                new Pose2d(-1, 0, new Rotation2d(0)),
-                config);
-            
-            var thetaController = new ProfiledPIDController(
-                s_Swerve.getPID(Math.sqrt(Math.pow(pose.getX(), 2) + Math.pow(pose.getY(), 2))), 0.5 , 0.08, Constants.AutoConstants.kThetaControllerConstraints);
-                thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        TrajectoryConfig config =
+        new TrajectoryConfig(
+                Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+                Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+            .setKinematics(Constants.Swerve.swerveKinematics);
+        if (pose.getX() < 0) {
+            config.setReversed(true);
+        }
+        Trajectory trajectory =
+        TrajectoryGenerator.generateTrajectory(
+            new Pose2d(0, 0, new Rotation2d(0)),
+            List.of(),
+            new Pose2d(-1, 0, new Rotation2d(0)),
+            config);
+        
+        var thetaController = new ProfiledPIDController(
+            s_Swerve.getPID(Math.sqrt(Math.pow(pose.getX(), 2) + Math.pow(pose.getY(), 2))), 0.5 , 0.08, Constants.AutoConstants.kThetaControllerConstraints);
+            thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-            swerveControllerCommand = new SwerveControllerCommand(
-                trajectory,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-                new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-            
-            s_Swerve.resetOdometry(trajectory.getInitialPose());
-            // cancelCommand = false;
-            swerveControllerCommand.schedule();
-        // }, () -> {
-        //     cancelCommand = true;
-        //     DriverStation.reportWarning("No vision target", false);
-        // });
+        swerveControllerCommand = new SwerveControllerCommand(
+            trajectory,
+            s_Swerve::getPose,
+            Constants.Swerve.swerveKinematics,
+            new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+            new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+            thetaController,
+            s_Swerve::setModuleStates,
+            s_Swerve);
+        
+        s_Swerve.resetOdometry(trajectory.getInitialPose());
     }
     
     @Override
     public void execute() {
-        // if (swerveControllerCommand.isFinished())
-        //     cancelCommand = true;
+        swerveControllerCommand.execute();
     }
 
     public void end(boolean interrupted) {
-        // if (swerveControllerCommand == null || !swerveControllerCommand.isFinished())
-        //     swerveControllerCommand.cancel();
+        swerveControllerCommand.end(interrupted);
         System.out.println("ended");
     }
+
     public boolean isFinished() {
         return true;
     }
