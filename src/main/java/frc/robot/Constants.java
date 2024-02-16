@@ -160,14 +160,17 @@ public final class Constants {
         new Rotation3d(0, 0, 0));
 
     /* Testing only, replace with provided april tag field layout */
-    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = new AprilTagFieldLayout(
+    public static final AprilTagFieldLayout TEST_APRIL_TAG_FIELD_LAYOUT = new AprilTagFieldLayout(
         /* Center of each set of driver stations */
         Arrays.asList(
             new AprilTag(0,
                 new Pose3d(new Pose2d(FieldConstants.LENGTH, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(180)))),
             new AprilTag(1, new Pose3d(new Pose2d(0.0, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(0.0))))),
         FieldConstants.LENGTH,
-        FieldConstants.WIDTH);
+        FieldConstants.WIDTH
+    );
+
+    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
     public static AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT() throws IOException {
       return AprilTagFieldLayout.loadFromResource(

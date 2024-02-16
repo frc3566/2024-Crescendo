@@ -44,8 +44,8 @@ public class Vision extends SubsystemBase {
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
         poseEstimator = new PhotonPoseEstimator(
-            Constants.Vision.APRIL_TAG_FIELD_LAYOUT(),
-            PoseStrategy.LOWEST_AMBIGUITY,
+            Constants.Vision.APRIL_TAG_FIELD_LAYOUT,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             apriltagCamera,
             Constants.Vision.ROBOT_TO_CAMERA
         );
@@ -57,7 +57,23 @@ public class Vision extends SubsystemBase {
         if (!result.hasTargets())
             return Optional.empty();
 
-        return Optional.of(result.getBestTarget());
+        List<PhotonTrackedTarget> targets = result.getTargets();
+        PhotonTrackedTarget target = result.getBestTarget();
+
+        if (targets.size() == 1) 
+            return Optional.of(target);
+
+        for (PhotonTrackedTarget potentialTarget: targets) {
+            int id = potentialTarget.getFiducialId();
+            potentialTarget.getPoseAmbiguity();
+            if (id == 4 || id == 7) {
+                target = potentialTarget;
+                break;
+            }
+        }
+
+        return Optional.of(target);
+
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
@@ -71,12 +87,16 @@ public class Vision extends SubsystemBase {
     }
 
     // public Transform3d getMultiAprilTag() {
-    //     var result = apriltagCamera.getLatestResult();
-    //     if (result.getMultiTagResult().estimatedPose.isPresent) {
-    //         Transform3d fieldToCamera = result.getMultiTagResult().estimatedPose.best;
+    //     var result = apriltagCamera.getLatestResult().getMultiTagResult();
+    //     if (result.estimatedPose.isPresent) {
+    //         Transform3d fieldToCamera = result.estimatedPose.best;
     //         return fieldToCamera;
     //     }
 
     //     return null;
     // }
+
+    public Optional<Pose3d> estimatePose() {
+        return poseEstimator.update().map(e -> e.estimatedPose);
+    }
 }
