@@ -50,7 +50,7 @@ public class DriveToPose extends Command {
 
         Pose2d currentPose = s_Swerve.getPose();
 
-        s_Swerve.resetOdometry(currentPose);
+        s_Swerve.resetOdometry(new Pose2d());
 
         // driveController.reset(
         //     new TrapezoidProfile.State(currentPose.getTranslation().getDistance(targetPose.getTranslation()),
@@ -64,7 +64,7 @@ public class DriveToPose extends Command {
         //     )
         // );
 
-        thetaController.reset(currentPose.getRotation().getRadians());
+        thetaController.reset(new Pose2d().getRotation().getRadians());
     }
 
     @Override
@@ -82,10 +82,17 @@ public class DriveToPose extends Command {
                 currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
             ).transformBy(new Transform2d(driveVelocityScalar, 0.0, new Rotation2d())).getTranslation();
 
-        // double thetaVelocity = thetaController.atGoal() ? 0.0 : 
-        //     thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+        
+        double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
+        double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
+        if (xController.atSetpoint()) { xVelocity = 0; }
+        if (yController.atSetpoint()) { yVelocity = 0; }
+        driveVelocity = new Translation2d(xVelocity, yVelocity);
 
-        s_Swerve.drive(driveVelocity, 0, true, true);
+        double thetaVelocity = thetaController.atGoal() ? 0.0 : 
+            thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+
+        s_Swerve.drive(driveVelocity, thetaVelocity, true, true);
     }
     
     @Override
