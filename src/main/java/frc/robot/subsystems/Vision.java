@@ -77,4 +77,18 @@ public class Vision extends SubsystemBase {
     public Optional<Pose3d> estimatePose() {
         return poseEstimator.update().map(e -> e.estimatedPose);
     }
+
+    public void printAllResults() {
+        System.out.println("Vision log:");
+        var result = apriltagCamera.getLatestResult();
+
+        if (!result.hasTargets()) {
+            System.out.println("> No targets found.");
+            return;
+        }
+
+        System.out.println("> Single AprilTag: " + getAprilTag());
+        System.out.println("> Multi AprilTag: " + getMultiAprilTag());
+        System.out.println("> Estimated pose: " + estimatePose());
+    }
 }
