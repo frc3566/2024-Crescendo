@@ -25,31 +25,12 @@ public class IntakeAndHold extends Command {
         s_Intake.setPower(intakeSpeed);
         s_Shooter.setPower(shooterReverseSpeed);
 
-        /* if (sensor detects note) {
-            end(false);
-        } */
-
-        if(!s_Intake.getSensor()){
-            end(false);
-        }
     }
 
     @Override
     public void end(boolean interrupted) {
-
-        // if(!interrupted){
-        //     if(s_Intake.getSensor()){ 
-        //         s_Intake.setPower(intakeReverseSpeed);
-        //     }
-        // }
-
         s_Intake.stop();
         s_Shooter.stop();
-
-        /* if (!interrupted) {
-            make sure note is in intake and not touching shooter flywheels
-        } */
-        
         
     }
 }
