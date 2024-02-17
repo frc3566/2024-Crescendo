@@ -42,20 +42,11 @@ public class Drive extends Command {
             Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared
         ));
 
-        Pose2d currentPose = s_Swerve.getPose();
         s_Swerve.resetOdometry(new Pose2d());
 
-        // driveController.reset(
-        //     new TrapezoidProfile.State(currentPose.getTranslation().getDistance(targetPose.getTranslation()),
-        //         -new Translation2d()
-        //             .rotateBy(targetPose
-        //                 .getTranslation()
-        //                 .minus(s_Swerve.getPose().getTranslation())
-        //                 .getAngle()
-        //                 .unaryMinus()
-        //             ).getX()
-        //     )
-        // );
+        driveController.reset(
+            new Translation2d().getDistance(targetPose.getTranslation())
+        );
     }
 
     @Override
@@ -64,30 +55,33 @@ public class Drive extends Command {
         System.out.println("Drive: " + currentPose);
         
         double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-        double driveErrorAbs = currentDistance;
-        double driveVelocityScalar = driveController.calculate(driveErrorAbs, 0.0);
-        if (driveController.atGoal())
-            driveVelocityScalar = 0.0;
 
-        Translation2d driveVelocity = new Pose2d(
-                new Translation2d(),
-                currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
-            ).transformBy(new Transform2d(driveVelocityScalar, 0.0, new Rotation2d())).getTranslation();
+        /* reduce current distance (error) to 0 */
+        double driveVelocityScalar = driveController.calculate(currentDistance, 0.0);
+        if (driveController.atGoal()) { driveVelocityScalar = 0.0; }
 
-        System.out.println("Combined controller: " + driveVelocityScalar + ", " + driveVelocity);
+        System.out.println("Rotations: " + currentPose.getRotation() + ", " + targetPose.getRotation());
 
-        double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
-        double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
+        Translation2d driveVelocity = new Translation2d(
+            driveVelocityScalar, 
+            // targetPose.getRotation().minus(currentPose.getRotation())
+            currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
+        );
 
-        System.out.println("Before: " + xVelocity + ", " + yVelocity);
+        System.out.println("Combined controller: " + driveVelocity);
 
-        if (xController.atSetpoint()) { xVelocity = 0; }
-        if (yController.atSetpoint()) { yVelocity = 0; }
+        // double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
+        // double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
 
-        System.out.println("After: " + xVelocity + ", " + yVelocity);
+        // System.out.println("Before: " + xVelocity + ", " + yVelocity);
 
-        // s_Swerve.drive(driveVelocity, 0, true, true);
-        s_Swerve.drive(new Translation2d(xVelocity, yVelocity), 0, true, true);
+        // if (xController.atSetpoint()) { xVelocity = 0; }
+        // if (yController.atSetpoint()) { yVelocity = 0; }
+
+        // System.out.println("After: " + xVelocity + ", " + yVelocity);
+
+        s_Swerve.drive(driveVelocity, 0, true, true);
+        // s_Swerve.drive(new Translation2d(xVelocity, yVelocity), 0, true, true);
     }
     
     @Override

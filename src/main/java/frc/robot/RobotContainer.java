@@ -100,7 +100,7 @@ public class RobotContainer {
         reset.onTrue(new Reset(s_Swerve));
         // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
 
-        DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(45))));
+        DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
         DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(0))));
         DPadRight.onTrue(new InstantCommand(() -> { System.out.println("DPadRight pressed");}));
         DPadDown.onTrue(new InstantCommand(() -> testCommand.cancel()));
