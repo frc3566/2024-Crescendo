@@ -19,6 +19,7 @@ public class PrimeAndShoot extends Command {
         addRequirements(s_Shooter);
     }
     
+    @Override
     public void execute() {
         s_Shooter.setPower(targetSpeed);
         timer.start();
@@ -27,5 +28,11 @@ public class PrimeAndShoot extends Command {
         }
 
         /* TODO: run intake when shooter is at target speed */
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        s_Shooter.stop();
+        s_Intake.stop();
     }
 }

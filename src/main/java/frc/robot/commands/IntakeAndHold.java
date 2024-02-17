@@ -3,6 +3,8 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
 
@@ -24,7 +26,6 @@ public class IntakeAndHold extends Command {
     public void execute() {
         s_Intake.setPower(intakeSpeed);
         s_Shooter.setPower(shooterReverseSpeed);
-
     }
 
     @Override
@@ -32,5 +33,8 @@ public class IntakeAndHold extends Command {
         s_Intake.stop();
         s_Shooter.stop();
         
+        new InstantCommand(() -> s_Intake.setPower(intakeReverseSpeed))
+            .andThen(new WaitCommand(0.25), new InstantCommand(() -> s_Intake.stop()))
+            .execute();
     }
 }
