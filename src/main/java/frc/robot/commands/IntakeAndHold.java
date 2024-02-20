@@ -30,6 +30,7 @@ public class IntakeAndHold extends Command {
         s_Intake.stop();
         s_Shooter.stop();
 
+        /* change to andThen... */
         new InstantCommand(() -> s_Intake.setPower(intakeReverseSpeed))
             .andThen(new WaitCommand(0.25), new InstantCommand(() -> s_Intake.stop()))
             .execute();
