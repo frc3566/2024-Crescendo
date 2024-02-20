@@ -42,4 +42,5 @@ public class Shooter extends SubsystemBase {
         left.stopMotor();
         right.stopMotor();
     }
+    
 }

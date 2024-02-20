@@ -4,6 +4,8 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
 
@@ -30,28 +32,17 @@ public class IntakeAndHold extends Command {
 
     @Override
     public void execute() {
-
-        if(s_Timer.get()>=stopTime){
-            isDone = true;
-            end(false);
-        }
-
-        else if(s_Timer.get() >= reverseTime) {
-            s_Intake.setPower(intakeReverseSpeed);
-        }
-
-        else{
-            s_Intake.setPower(intakeSpeed);
-        }
-
+        s_Intake.setPower(intakeSpeed);
+        s_Shooter.setPower(shooterReverseSpeed);
     }
 
     @Override
     public void end(boolean interrupted) {
         s_Intake.stop();
-    }
-
-    public boolean isFinished() {
-        return isDone;
+        s_Shooter.stop();
+        
+        new InstantCommand(() -> s_Intake.setPower(intakeReverseSpeed))
+            .andThen(new WaitCommand(0.25), new InstantCommand(() -> s_Intake.stop()))
+            .execute();
     }
 }
