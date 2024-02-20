@@ -16,6 +16,7 @@ import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.swerve.pid.Drive;
+import frc.robot.commands.swerve.pid.DriveToPose;
 import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.subsystems.*;
 
@@ -101,8 +102,8 @@ public class RobotContainer {
         // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
 
         DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
-        DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(0))));
-        DPadRight.onTrue(new InstantCommand(() -> { System.out.println("DPadRight pressed");}));
+        DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 1, Rotation2d.fromDegrees(0))));
+        DPadRight.onTrue(testCommand = new DriveToPose(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(90))));
         DPadDown.onTrue(new InstantCommand(() -> testCommand.cancel()));
     }
 

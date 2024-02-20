@@ -63,6 +63,11 @@ public class Spin extends Command {
         s_Swerve.drive(new Translation2d(), 0, true, true);
     }
 
+    @Override
+    public boolean isFinished() {
+        return atGoal();
+    }
+
     public boolean atGoal() {
         return isRunning && thetaController.atGoal();
     }

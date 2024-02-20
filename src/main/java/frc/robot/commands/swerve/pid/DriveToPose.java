@@ -37,57 +37,34 @@ public class DriveToPose extends Command {
     public void initialize() {
         isRunning = true;
 
-        this.xController = new PIDController(Constants.AutoConstants.kPXController, 0, 0);
-        this.yController = new PIDController(Constants.AutoConstants.kPYController, 0, 0);
-
-        // this.driveController = new ProfiledPIDController(Constants.AutoConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
-        //     Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared
-        // ));
+        this.driveController = new ProfiledPIDController(Constants.AutoConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared
+        ));
 
         this.thetaController = new ProfiledPIDController(
             Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        Pose2d currentPose = s_Swerve.getPose();
-
+        s_Swerve.zeroGyro();
         s_Swerve.resetOdometry(new Pose2d());
-
-        // driveController.reset(
-        //     new TrapezoidProfile.State(currentPose.getTranslation().getDistance(targetPose.getTranslation()),
-        //         -new Translation2d()
-        //             .rotateBy(targetPose
-        //                 .getTranslation()
-        //                 .minus(s_Swerve.getPose().getTranslation())
-        //                 .getAngle()
-        //                 .unaryMinus()
-        //             ).getX()
-        //     )
-        // );
-
+        driveController.reset(new Translation2d().getDistance(targetPose.getTranslation()));
         thetaController.reset(new Pose2d().getRotation().getRadians());
     }
 
     @Override
     public void execute() {
         Pose2d currentPose = s_Swerve.getPose();
+        System.out.println("DriveToPose: " + currentPose);
         
+        /* reduce current distance (error) to 0 */
         double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-        double driveErrorAbs = currentDistance;
-        double driveVelocityScalar = driveController.calculate(driveErrorAbs, 0.0);
-        if (driveController.atGoal())
-            driveVelocityScalar = 0.0;
+        double driveVelocityScalar = driveController.atGoal() ? 0.0 : 
+            driveController.calculate(currentDistance, 0.0);
 
-        Translation2d driveVelocity = new Pose2d(
-                new Translation2d(),
-                currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
-            ).transformBy(new Transform2d(driveVelocityScalar, 0.0, new Rotation2d())).getTranslation();
-
-        
-        double xVelocity = xController.calculate(currentPose.getX(), targetPose.getX());
-        double yVelocity = yController.calculate(currentPose.getY(), targetPose.getY());
-        if (xController.atSetpoint()) { xVelocity = 0; }
-        if (yController.atSetpoint()) { yVelocity = 0; }
-        driveVelocity = new Translation2d(xVelocity, yVelocity);
+        Translation2d driveVelocity = new Translation2d(
+            driveVelocityScalar, 
+            currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
+        );
 
         double thetaVelocity = thetaController.atGoal() ? 0.0 : 
             thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
@@ -99,6 +76,12 @@ public class DriveToPose extends Command {
     public void end(boolean interrupted) {
         isRunning = false;
         s_Swerve.drive(new Translation2d(), 0, true, true);
+        s_Swerve.zeroGyro();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return atGoal();
     }
 
     public boolean atGoal() {
