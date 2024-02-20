@@ -15,6 +15,8 @@ public class Shooter extends SubsystemBase {
         right = new CANSparkMax(Constants.Shooter.Right_Motor_Id, MotorType.kBrushless);
         left.setInverted(false);
         right.setInverted(true);
+        left.setSmartCurrentLimit(60);
+        right.setSmartCurrentLimit(60);
     }
 
     public void setPower(double power) {
