@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -38,14 +40,24 @@ public class RobotContainer {
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
 
+    private final JoystickButton rightBumper = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton leftBumper = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    
+    private final POVButton DPadUp = new POVButton(driver, 0);
+    private final POVButton DPadDown = new POVButton(driver, 180);
+    private final POVButton DPadLeft = new POVButton(driver, 90);
+    private final POVButton DPadRight = new POVButton(driver, 270);
+
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
+    private double intakePower = 0.5;
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer(){
+    public RobotContainer() {
         // s_Vision = new Vision();
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -65,14 +77,6 @@ public class RobotContainer {
             )
         );
 
-        // s_Intake.setDefaultCommand(
-        //     new IntakeControl(
-        //         s_Intake,
-        //         () -> driver.getRawAxis(leftBumperID),
-        //         () -> driver.getRawAxis(rightBumperID)
-        //     )
-        // );
-
         configureButtonBindings();
     }
 
@@ -90,6 +94,7 @@ public class RobotContainer {
         RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
         LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
         LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        // moveToPose.onTrue(new MoveToPose(s_Swerve));
     }
 
     /**
