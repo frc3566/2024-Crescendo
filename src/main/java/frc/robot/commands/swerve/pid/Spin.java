@@ -21,6 +21,16 @@ public class Spin extends Command {
 
     private boolean isRunning;
 
+    private static class SpinCommandConstants {
+        public static final double kMaxAngularSpeedRadiansPerSecond = 2.5 * Math.PI; 
+        public static final double kMaxAngularSpeedRadiansPerSecondSquared =  2.25 * Math.PI; 
+        public static final double kPThetaController = 6;
+
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
+            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared
+        );
+    }
+
     public Spin(Swerve s_Swerve, Pose2d targetPose) {
         this.s_Swerve = s_Swerve;
         this.targetPose = targetPose;
@@ -34,12 +44,9 @@ public class Spin extends Command {
     public void initialize() {
         isRunning = true;
 
-        // this.thetaController = new ProfiledPIDController(
-        //     s_Swerve.getPID(Math.sqrt(Math.pow(pose.getX(), 2) + Math.pow(pose.getY(), 2))), 0.5 , 0.08, Constants.AutoConstants.kThetaControllerConstraints);
-
         this.thetaController = new ProfiledPIDController(
-            Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
-
+            SpinCommandConstants.kPThetaController, 0, 0, SpinCommandConstants.kThetaControllerConstraints
+        );
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         s_Swerve.resetOdometry(new Pose2d());
