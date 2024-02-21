@@ -32,6 +32,9 @@ public class RobotContainer {
     private final int leftTriggerID = XboxController.Axis.kLeftTrigger.value;
     private final int rightTriggerID = XboxController.Axis.kRightTrigger.value;
 
+    private final JoystickButton RB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton LB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -66,13 +69,13 @@ public class RobotContainer {
             )
         );
 
-        // s_Shooter.setDefaultCommand(
-        //     new Shoot(
-        //         s_Shooter, 
-        //         () -> driver.getRawAxis(leftTriggerID),
-        //         () -> driver.getRawAxis(rightTriggerID)
-        //     )
-        // );
+        s_Shooter.setDefaultCommand(
+            new Shoot(
+                s_Shooter, 
+                () -> driver.getRawAxis(leftTriggerID),
+                () -> driver.getRawAxis(rightTriggerID)
+            )
+        );
 
         configureButtonBindings();
     }
@@ -86,21 +89,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        moveToPose.onTrue(new MoveToPose(s_Swerve));
+        RB.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
+        LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
         // moveToPose.onTrue(new MoveToPose(s_Swerve));
-
-        DPadUp.whileTrue(new IntakeTest(s_Intake, () -> intakePower));
-        DPadDown.whileTrue(new IntakeTest(s_Intake, () -> -intakePower));
-
-        rightBumper.onTrue(new InstantCommand(() -> {
-            intakePower = Math.min(intakePower + 0.1, 1);
-            System.out.println("Intake Power: " + intakePower);
-        }));
-
-        leftBumper.onTrue(new InstantCommand(() -> {
-            intakePower = Math.max(intakePower - 0.1, 0);
-            System.out.println("Intake Power: " + intakePower);
-        }));
-        // rightBumper.whileTrue(new IntakeAndHold(s_Intake, s_Shooter));
     }
 
     /**

@@ -16,6 +16,7 @@ public class Intake extends SubsystemBase {
         // sensor = new DigitalInput(0);
         intakeMotor = new CANSparkMax(Constants.Intake.Intake_Motor_Id, MotorType.kBrushless);
         intakeMotor.setInverted(false);
+        intakeMotor.setSmartCurrentLimit(60);
     }
 
     public void setPower(double power) {
@@ -36,6 +37,14 @@ public class Intake extends SubsystemBase {
     //     left.setIdleMode(sparkMode);
     //     right.setIdleMode(sparkMode);
     // }
+
+    public void takeIn(){
+        intakeMotor.set(1);
+    }
+
+    public void eject(){
+        intakeMotor.set(-1);
+    }
 
     public void stop() {
         intakeMotor.stopMotor();

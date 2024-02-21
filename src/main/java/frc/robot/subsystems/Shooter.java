@@ -8,13 +8,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
     public CANSparkMax left, right;
-    public double ltrigger, rtrigger;
 
     public Shooter() {
         left = new CANSparkMax(Constants.Shooter.Left_Motor_Id, MotorType.kBrushless);
         right = new CANSparkMax(Constants.Shooter.Right_Motor_Id, MotorType.kBrushless);
         left.setInverted(false);
         right.setInverted(true);
+        left.setSmartCurrentLimit(60);
+        right.setSmartCurrentLimit(60);
     }
 
     /**
