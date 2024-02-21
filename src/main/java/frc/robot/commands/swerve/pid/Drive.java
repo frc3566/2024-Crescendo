@@ -44,6 +44,7 @@ public class Drive extends Command {
             DriveCommandConstants.kMaxSpeedMetersPerSecond, DriveCommandConstants.kMaxAccelerationMetersPerSecondSquared
         ));
 
+        s_Swerve.zeroGyro();
         s_Swerve.resetOdometry(new Pose2d());
         driveController.reset(new Translation2d().getDistance(targetPose.getTranslation()));
     }
@@ -70,6 +71,7 @@ public class Drive extends Command {
     public void end(boolean interrupted) {
         isRunning = false;
         s_Swerve.drive(new Translation2d(), 0, true, true);
+        s_Swerve.zeroGyro();
     }
 
     @Override

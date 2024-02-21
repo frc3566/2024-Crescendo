@@ -49,6 +49,7 @@ public class Spin extends Command {
         );
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
+        s_Swerve.zeroGyro();
         s_Swerve.resetOdometry(new Pose2d());
         thetaController.reset(new Pose2d().getRotation().getRadians());
     }
@@ -68,6 +69,7 @@ public class Spin extends Command {
     public void end(boolean interrupted) {
         isRunning = false;
         s_Swerve.drive(new Translation2d(), 0, true, true);
+        s_Swerve.zeroGyro();
     }
 
     @Override
