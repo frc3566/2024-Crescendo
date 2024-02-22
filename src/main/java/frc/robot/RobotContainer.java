@@ -3,7 +3,6 @@ package frc.robot;
 import java.io.IOException;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,9 +14,7 @@ import frc.robot.autos.*;
 import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
-import frc.robot.commands.swerve.pid.Drive;
-import frc.robot.commands.swerve.pid.DriveToPose;
-import frc.robot.commands.swerve.pid.Spin;
+import frc.robot.commands.vision.DriveToAprilTag;
 import frc.robot.subsystems.*;
 
 /**
@@ -55,11 +52,12 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     // private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
-    // private final Vision s_Vision;
+    private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer(){
-        // s_Vision = new Vision();
+    public RobotContainer() throws IOException {
+        s_Vision = new Vision();
+        
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -101,9 +99,11 @@ public class RobotContainer {
         reset.onTrue(new Reset(s_Swerve));
         // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
 
-        DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
-        DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 1, Rotation2d.fromDegrees(0))));
-        DPadRight.onTrue(testCommand = new DriveToPose(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(90))));
+        // DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
+        // DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 1, Rotation2d.fromDegrees(0))));
+        // DPadRight.onTrue(testCommand = new DriveToPose(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(90))));
+
+        DPadUp.onTrue(testCommand = new DriveToAprilTag(s_Swerve, s_Vision));
         DPadDown.onTrue(new InstantCommand(() -> testCommand.cancel()));
     }
 

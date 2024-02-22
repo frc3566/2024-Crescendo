@@ -24,8 +24,6 @@ public class Vision extends SubsystemBase {
     private PhotonCamera apriltagCamera;
     private PhotonPoseEstimator poseEstimator;
 
-    private final double metersInFrontOfTarget = 0.5;
-
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
         poseEstimator = new PhotonPoseEstimator(
@@ -60,10 +58,8 @@ public class Vision extends SubsystemBase {
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
         Transform3d transform = target.getBestCameraToTarget();
-        Translation2d end = transform.getTranslation().toTranslation2d()
-            .minus(new Translation2d(metersInFrontOfTarget, 0));
-
-        return new Pose2d(end, Rotation2d.fromDegrees(target.getYaw()));
+        Translation2d end = transform.getTranslation().toTranslation2d();
+        return new Pose2d(end, Rotation2d.fromDegrees(-target.getYaw()));
     }
 
     public Optional<Transform3d> getMultiAprilTag() {
