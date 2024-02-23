@@ -70,10 +70,10 @@ public final class Constants {
     public static final double driveKFF = 0.0;
 
     /* Drive Motor Characterization Values */
-    public static final double driveKS = 0.3797225;
-    public static final double driveKV = 3.109325;
+    public static final double driveKS = 0.3156;
+    public static final double driveKV = 3.02865;
     // public static final double driveKA = 0.2401975;
-    public static final double driveKA = 0.2600525;
+    public static final double driveKA = 0.05;
 
     /* Drive Motor Conversion Factors */
     public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
