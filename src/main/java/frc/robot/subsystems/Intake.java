@@ -43,7 +43,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void eject(){
-        intakeMotor.set(-1);
+        intakeMotor.set(-0.5);
     }
 
     public void stop() {
