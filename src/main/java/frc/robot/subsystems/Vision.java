@@ -35,31 +35,36 @@ public class Vision extends SubsystemBase {
     }
 
     public Optional<PhotonTrackedTarget> getAprilTag() {
-        var result = apriltagCamera.getLatestResult();
+        for (int i = 0; i < 20; i++) {
+            var result = apriltagCamera.getLatestResult();
 
-        if (!result.hasTargets()) { return Optional.empty(); }
+            if (!result.hasTargets()) { continue; }
 
-        List<PhotonTrackedTarget> targets = result.getTargets();
-        PhotonTrackedTarget target = result.getBestTarget();
+            List<PhotonTrackedTarget> targets = result.getTargets();
+            PhotonTrackedTarget target = result.getBestTarget();
 
-        if (targets.size() == 1) { return Optional.of(target); }
-
-        for (PhotonTrackedTarget potentialTarget: targets) {
-            int id = potentialTarget.getFiducialId();
-            potentialTarget.getPoseAmbiguity();
-            if (id == 4 || id == 7) {
-                target = potentialTarget;
-                break;
+            for (PhotonTrackedTarget potentialTarget: targets) {
+                int id = potentialTarget.getFiducialId();
+                if (id == 4 || id == 7) {
+                    target = potentialTarget;
+                    break;
+                }
             }
+
+            if (target.getPoseAmbiguity() <= 0.4) { return Optional.of(target); }
         }
 
-        return Optional.of(target);
+        return Optional.empty();
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
         Transform3d transform = target.getBestCameraToTarget();
         Translation2d end = transform.getTranslation().toTranslation2d();
-        return new Pose2d(end, Rotation2d.fromDegrees(-target.getYaw()));
+
+        double zAngleTheta = transform.getRotation().getZ();
+        Rotation2d yaw = Rotation2d.fromRadians(Math.signum(zAngleTheta) * (Math.PI - Math.abs(zAngleTheta))).unaryMinus();
+
+        return new Pose2d(new Translation2d(end.getX(), -end.getY()), yaw);
     }
 
     public Optional<Transform3d> getMultiAprilTag() {

@@ -34,7 +34,7 @@ public class DriveToAprilTag extends Command {
 
     @Override
     public void initialize() {
-        System.out.println("Running DriveToAprilTag");
+        System.out.println("Running DriveToAprilTag:");
         s_Vision.printAllResults();
 
         var result = s_Vision.getAprilTag();
@@ -54,10 +54,15 @@ public class DriveToAprilTag extends Command {
 
         System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);
 
-        Pose2d singleDimensionTranslation = poseToAprilTagMinusGap.rotateBy(poseToAprilTag.getRotation().unaryMinus());
+        Pose2d singleDimensionTranslation = new Pose2d(
+            poseToAprilTagMinusGap.getTranslation().rotateBy(poseToAprilTag.getRotation().unaryMinus()),
+            new Rotation2d()
+        );
+
         System.out.println("> Translation component: " + singleDimensionTranslation);
 
-        commandGroup = new Spin(s_Swerve, poseToAprilTagMinusGap).andThen(new Drive(s_Swerve, singleDimensionTranslation));
+        commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap).andThen(new Spin(s_Swerve, poseToAprilTagMinusGap));
+        // commandGroup = new Spin(s_Swerve, poseToAprilTagMinusGap).andThen(new Drive(s_Swerve, singleDimensionTranslation));
         commandGroup.schedule();
     }
 
