@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Intake extends SubsystemBase {
     // public DigitalInput sensor;
     public CANSparkMax intakeMotor;
-    public double rtrigger;
 
     public Intake() {
         // sensor = new DigitalInput(0);

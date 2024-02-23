@@ -150,7 +150,12 @@ public final class Constants {
   }
 
   public static class Intake{
-      public static int Intake_Motor_Id = 9;
+    public static int Intake_Motor_Id = 9;
+  }
+
+  public static class Climber{
+    public static int Left_Climber_Id = 12;
+    public static int Right_Climber_Id = 13;
   }
 
   public static class Vision {

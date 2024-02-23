@@ -39,9 +39,6 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
     private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
-
-    private final JoystickButton rightBumper = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton leftBumper = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     
     private final POVButton DPadUp = new POVButton(driver, 0);
     private final POVButton DPadDown = new POVButton(driver, 180);
@@ -52,6 +49,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
+    private final Climber s_Climber = new Climber();
     // private final Vision s_Vision;
 
     private double intakePower = 0.5;
@@ -94,6 +92,11 @@ public class RobotContainer {
         RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
         LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
         LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.climb()));
+        DPadUp.onFalse(new InstantCommand(() -> s_Climber.stop()));
+        DPadDown.onTrue(new InstantCommand(() -> s_Climber.retract()));
+        DPadDown.onFalse(new InstantCommand(() -> s_Climber.stop()));
+
         // moveToPose.onTrue(new MoveToPose(s_Swerve));
     }
 
