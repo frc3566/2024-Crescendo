@@ -16,13 +16,32 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
 
+
+/* Make sure that 
+ * • the correct camera resolution is selected 
+ * • the targets are sorted by closest to farthest distance
+ * on https://photonvision.local:5800 
+*/
+
 public class Vision extends SubsystemBase {
     private PhotonCamera apriltagCamera;
     private PhotonPoseEstimator poseEstimator;
+
+    private static final List<Integer> BLUE_APRILTAG_IDS = List.of(7, 6, 1, 2, 14, 15, 16);
+    private static final List<Integer> RED_APRILTAG_IDS = List.of(4, 5, 9, 10, 11, 12, 13);
+    
+    /* list of fiducial ids to look for depending on alliance */
+    private List<Integer> targetFiducialIds = DriverStation.getAlliance()
+        .map(alliance -> alliance == DriverStation.Alliance.Blue ? BLUE_APRILTAG_IDS : RED_APRILTAG_IDS)
+        .orElseGet(() -> {
+            BLUE_APRILTAG_IDS.addAll(RED_APRILTAG_IDS);
+            return BLUE_APRILTAG_IDS;
+        });
 
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
@@ -34,27 +53,29 @@ public class Vision extends SubsystemBase {
         );
     }
 
+    /**
+     * Gets the closest April Tag that matches any id in the list of targetFiducialIds
+     *  if and only if its ambiguity < 0.2
+     * 
+     * @return Optional<PhotonTrackedTarget>: The closest April Tag that matches a target fiducial id if its ambiguity < 0.2
+     */
     public Optional<PhotonTrackedTarget> getAprilTag() {
-        for (int i = 0; i < 20; i++) {
-            var result = apriltagCamera.getLatestResult();
+        var result = apriltagCamera.getLatestResult();
+        List<PhotonTrackedTarget> targets = result.getTargets();
+        Optional<PhotonTrackedTarget> target = Optional.empty();
 
-            if (!result.hasTargets()) { continue; }
-
-            List<PhotonTrackedTarget> targets = result.getTargets();
-            PhotonTrackedTarget target = result.getBestTarget();
-
-            for (PhotonTrackedTarget potentialTarget: targets) {
-                int id = potentialTarget.getFiducialId();
-                if (id == 4 || id == 7) {
-                    target = potentialTarget;
-                    break;
-                }
+        /* get closest target that matches any targetFiducialId */
+        for (PhotonTrackedTarget potentialTarget: targets) {
+            if (targetFiducialIds.contains(potentialTarget.getFiducialId())) {
+                target = Optional.of(potentialTarget);
+                break;
             }
-
-            if (target.getPoseAmbiguity() <= 0.4) { return Optional.of(target); }
         }
 
-        return Optional.empty();
+        /* return target only if ambiguity < 0.2 */
+        return target.map(e -> 
+            e.getPoseAmbiguity() < 0.2 ? e : null
+        );
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
@@ -64,7 +85,7 @@ public class Vision extends SubsystemBase {
         double zAngleTheta = transform.getRotation().getZ();
         Rotation2d yaw = Rotation2d.fromRadians(Math.signum(zAngleTheta) * (Math.PI - Math.abs(zAngleTheta))).unaryMinus();
 
-        return new Pose2d(new Translation2d(end.getX(), -end.getY()), yaw);
+        return new Pose2d(end, yaw);
     }
 
     public Optional<Transform3d> getMultiAprilTag() {

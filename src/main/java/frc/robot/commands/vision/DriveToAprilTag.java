@@ -19,12 +19,15 @@ public class DriveToAprilTag extends Command {
 
     private Pose2d poseToAprilTag = new Pose2d();
 
-    private SequentialCommandGroup commandGroup = new SequentialCommandGroup();
+    private Command commandGroup = new SequentialCommandGroup();
+
+    private int counter = 0;
+    private boolean interrupted = false;
 
     private static final double
         cameraToRobotFront = 0.5,
         speakerAprilTagGap = 1,
-        additionalGapForGoodMeasure = 0.5;
+        additionalGapForGoodMeasure = 1.0;
 
     public DriveToAprilTag(Swerve s_Swerve, Vision s_Vision) {
         this.s_Swerve = s_Swerve;
@@ -35,13 +38,22 @@ public class DriveToAprilTag extends Command {
     @Override
     public void initialize() {
         System.out.println("Running DriveToAprilTag:");
-        s_Vision.printAllResults();
+        interrupted = false;
+    }
+
+    @Override
+    public void execute() {
+        if (!poseToAprilTag.equals(new Pose2d()) || commandGroup.isScheduled() || commandGroup.isFinished()) return;
 
         var result = s_Vision.getAprilTag();
         if (result.isEmpty()) {
-            System.out.println("> No April Tag.");
+            System.out.println("Cycle: " + ++counter);
             return;
         } 
+
+        System.out.println("Cycle: " + counter);
+
+        s_Vision.printAllResults();
 
         poseToAprilTag = s_Vision.getPoseTo(result.get());
         System.out.println("> April Tag: " + poseToAprilTag);
@@ -63,16 +75,20 @@ public class DriveToAprilTag extends Command {
 
         commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap).andThen(new Spin(s_Swerve, poseToAprilTagMinusGap));
         // commandGroup = new Spin(s_Swerve, poseToAprilTagMinusGap).andThen(new Drive(s_Swerve, singleDimensionTranslation));
+        // commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap);
         commandGroup.schedule();
     }
 
     @Override
     public void end(boolean interrupted) {
+        poseToAprilTag = new Pose2d();
+        commandGroup = new SequentialCommandGroup();
+        this.interrupted = true;
         commandGroup.cancel();
     }
 
     @Override
     public boolean isFinished() {
-        return commandGroup.isFinished();
+        return commandGroup.isFinished() || interrupted;
     }
 }

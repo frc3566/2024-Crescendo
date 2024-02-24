@@ -110,10 +110,13 @@ public class RobotContainer {
         Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
         Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
 
-        DPadUp.onTrue(testCommand = new DriveToAprilTag(s_Swerve, s_Vision));
-        DPadLeft.onTrue(testCommand = new Drive(s_Swerve, target).andThen(new Spin(s_Swerve, target)));
-        DPadRight.onTrue(testCommand = new Spin(s_Swerve, target).andThen(new Drive(s_Swerve, new Pose2d(single, new Rotation2d()))));
-        DPadDown.onTrue(new InstantCommand(() -> testCommand.cancel()));
+        DPadUp.onTrue(testCommand = (testCommand == null ? new DriveToAprilTag(s_Swerve, s_Vision) : testCommand));
+        // DPadLeft.onTrue(testCommand = new Drive(s_Swerve, target).andThen(new Spin(s_Swerve, target)));
+        // DPadRight.onTrue(testCommand = new Spin(s_Swerve, target).andThen(new Drive(s_Swerve, new Pose2d(single, new Rotation2d()))));
+        DPadDown.onTrue(new InstantCommand(() -> {
+            if (testCommand != null) { testCommand.cancel(); }
+            testCommand = null;
+        }));
     }
 
     /**
