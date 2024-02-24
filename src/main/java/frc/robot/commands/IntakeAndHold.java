@@ -18,8 +18,7 @@ public class IntakeAndHold extends SequentialCommandGroup {
         Command buffer = new IntakeTest(s_Intake, () -> intakeReverseSpeed, 0.1);
 
         addCommands(
-            intake, 
-            andThen(buffer)
+            intake.andThen(buffer)
         );
     }
 }

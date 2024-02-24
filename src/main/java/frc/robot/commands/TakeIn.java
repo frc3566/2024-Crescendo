@@ -35,7 +35,7 @@ public class TakeIn extends Command{
     @Override
     public void end(boolean interrupted) {
         if (isFinished()){
-                    s_Shooter.stop();
+            s_Shooter.stop();
             s_Intake.stop();
         }
     }
