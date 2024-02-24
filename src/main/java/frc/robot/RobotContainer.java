@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
-import frc.robot.commands.*;
-import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.commands.swerve.MoveToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -35,13 +34,11 @@ public class RobotContainer {
     private final int leftTriggerID = XboxController.Axis.kLeftTrigger.value;
     private final int rightTriggerID = XboxController.Axis.kRightTrigger.value;
 
-    private final JoystickButton RB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton LB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton kX = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton kY = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton kA = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton kB = new JoystickButton(driver, XboxController.Button.kB.value);
 
     private final JoystickButton rightBumper = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
     private final JoystickButton leftBumper = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
@@ -57,23 +54,20 @@ public class RobotContainer {
     private final Intake s_Intake = new Intake();
     // private final Vision s_Vision;
 
-    private double intakePower = 0.5;
-
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        // s_Vision = new Vision();
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(leftThumbYID), // translation axis
                 () -> -driver.getRawAxis(leftThumbXID), // strafe axis
                 () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
-                () -> robotCentric.getAsBoolean()
+                () -> kY.getAsBoolean()
             )
         );
 
         s_Shooter.setDefaultCommand(
-            new Shoot(
+            new TeleopShoot(
                 s_Shooter, 
                 () -> driver.getRawAxis(leftTriggerID),
                 () -> driver.getRawAxis(rightTriggerID)
@@ -91,13 +85,12 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        moveToPose.onTrue(new MoveToPose(s_Swerve));
-        RB.onTrue(new InstantCommand(() -> s_Intake.eject()));
-        RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
-        LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        // moveToPose.onTrue(new MoveToPose(s_Swerve));
+        kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+
+        rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        leftBumper.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
+        leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
     }
 
     /**
@@ -106,7 +99,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
         return new exampleAuto(s_Swerve);
     }
 }
