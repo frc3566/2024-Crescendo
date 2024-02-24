@@ -26,14 +26,18 @@ public class TakeIn extends Command{
 
     @Override
     public void execute() {
-        s_Shooter.setPower(shooterReverseSpeed);
-        s_Intake.setPower(intakeSpeed);
+        if (!isFinished()){
+            s_Shooter.setPower(shooterReverseSpeed);
+            s_Intake.setPower(intakeSpeed);
+        }
     }
 
     @Override
     public void end(boolean interrupted) {
-        s_Shooter.stop();
-        s_Intake.stop();
+        if (isFinished()){
+                    s_Shooter.stop();
+            s_Intake.stop();
+        }
     }
 
     public boolean isFinished(){

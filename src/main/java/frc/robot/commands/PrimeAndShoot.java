@@ -37,9 +37,11 @@ public class PrimeAndShoot extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        s_Shooter.stop();
-        s_Intake.stop();
-        timer.stop();
+        if (isFinished()){
+            s_Shooter.stop();
+            s_Intake.stop();
+            timer.stop();
+        }
     }
 
     @Override 
