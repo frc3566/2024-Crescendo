@@ -1,10 +1,24 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+
+import java.io.IOException;
+import java.util.Arrays;
+
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -19,8 +33,8 @@ public final class Constants {
     public static final boolean invertGyro = true; // Always ensure Gyro is CCW+ CW-
 
     /* Drivetrain Constants */
-    public static final double trackWidth = Units.inchesToMeters(27.625);
-    public static final double wheelBase = Units.inchesToMeters(27.625);
+    public static final double trackWidth = Units.inchesToMeters(24.25);
+    public static final double wheelBase = Units.inchesToMeters(24.25);
     public static final double wheelDiameter = Units.inchesToMeters(4.0);
     public static final double wheelCircumference = wheelDiameter * Math.PI;
 
@@ -50,16 +64,19 @@ public final class Constants {
     public static final double angleKFF = 0.0;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.0003824;
+    // public static final double driveKP = 0.02531425;
+    public static final double driveKP = 0;
     public static final double driveKI = 0.0;
     public static final double driveKD = 0;
     public static final double driveKFF = 0.0;
 
     /* Drive Motor Characterization Values */
-    public static final double driveKS = 0.3156;
-    public static final double driveKV = 3.02865;
-    // public static final double driveKA = 0.2401975;
-    public static final double driveKA = 0.00;
+    // public static final double driveKS = 0.3797225;
+    // public static final double driveKV = 3.109325;
+    // public static final double driveKA = 0.2600525;
+    public static final double driveKS = 0;
+    public static final double driveKV = 0;
+    public static final double driveKA = 0;
 
     /* Drive Motor Conversion Factors */
     public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
@@ -87,7 +104,7 @@ public final class Constants {
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
       public static final int canCoderID = 0;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(316.14);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(319.66);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -97,7 +114,7 @@ public final class Constants {
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 1;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(109.33);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(108.81);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -107,7 +124,7 @@ public final class Constants {
       public static final int driveMotorID = 5;
       public static final int angleMotorID = 6;
       public static final int canCoderID = 2;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(308.76);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(309.55);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -119,7 +136,7 @@ public final class Constants {
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
       public static final int canCoderID = 3;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(337.24);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(338.20);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -127,18 +144,67 @@ public final class Constants {
 
   public static class Shooter {
       public static int Left_Motor_Id = 10;
-      public static int Right_Motor_Id = 9;
+      public static int Right_Motor_Id = 11;
+  }
+
+  public static class Intake{
+      public static int Intake_Motor_Id = 9;
+  }
+
+  public static class Vision {
+    public static final String APRIL_TAG_CAMERA_NAME = "Limelight1";
+
+    public static final double CAMERA_HEIGHT_METERS = 0;
+    public static final double APRILTAG_HEIGHT_METERS = 0.6;
+    public static final double CAMERA_PITCH_RADIANS = Math.toRadians(0);
+
+    public static final Transform3d ROBOT_TO_CAMERA = new Transform3d(
+        new Translation3d(Units.inchesToMeters(8.75), Units.inchesToMeters(0.375), Units.inchesToMeters(12.75)),
+        new Rotation3d(0, 0, 0));
+
+    /* Testing only, replace with provided april tag field layout */
+    public static final AprilTagFieldLayout TEST_APRIL_TAG_FIELD_LAYOUT = new AprilTagFieldLayout(
+        /* Center of each set of driver stations */
+        Arrays.asList(
+            new AprilTag(0,
+                new Pose3d(new Pose2d(FieldConstants.LENGTH, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(180)))),
+            new AprilTag(1, new Pose3d(new Pose2d(0.0, FieldConstants.WIDTH / 2.0, Rotation2d.fromDegrees(0.0))))),
+        FieldConstants.LENGTH,
+        FieldConstants.WIDTH
+    );
+
+    public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+    public static AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT() throws IOException {
+      return AprilTagFieldLayout.loadFromResource(
+          AprilTagFields.kDefaultField.toString());
+    }
+  }
+    
+  /* LENGTH > WIDTH */
+  public static class FieldConstants {
+    public static final double LENGTH = Units.inchesToMeters(54*12 + 3.25); 
+    public static final double WIDTH = Units.inchesToMeters(26*12 + 3.5);
+  }
+
+  public static final class Trajectory {
+    public static final TrajectoryConfig CONFIG = new TrajectoryConfig(
+        Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+        Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+        .setKinematics(Constants.Swerve.swerveKinematics);
+
+    public static final double COEFFICIENT = 1.2;
   }
 
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final double kMaxSpeedMetersPerSecond = 3; 
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3; 
+    public static final double kMaxAngularSpeedRadiansPerSecond = 2.5 * Math.PI; 
+    public static final double kMaxAngularSpeedRadiansPerSecondSquared =  2.25 * Math.PI; 
 
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
+    public static final double kPXController = 5;
+    public static final double kPYController = 5;
+    public static final double kPThetaController = 5;
 
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(

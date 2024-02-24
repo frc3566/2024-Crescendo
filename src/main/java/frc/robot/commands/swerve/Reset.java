@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.SwerveModule;
@@ -15,7 +15,7 @@ public class Reset extends Command {
     public void execute() {
         s_Swerve.resetModulesToAbsolute();
         for (SwerveModule mod : s_Swerve.mSwerveMods) {
-            System.out.println("Module " + mod + ": " + mod.getValue() + ".");
+            System.out.println("Module " + mod.moduleNumber + ": " + mod.getValue() + ".");
         }
     }
 
