@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.shooter;
 
 import java.util.function.DoubleSupplier;
 
@@ -37,11 +37,9 @@ public class PrimeAndShoot extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if (isFinished()){
-            s_Shooter.stop();
-            s_Intake.stop();
-            timer.stop();
-        }
+        s_Shooter.stop();
+        s_Intake.stop();
+        timer.stop();
     }
 
     @Override 

@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
+import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.swerve.MoveToPose;
+import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 
 /**
