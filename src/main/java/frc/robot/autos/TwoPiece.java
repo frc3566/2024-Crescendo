@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.intake.IntakeAndHold;
 import frc.robot.commands.intake.IntakeTest;
 import frc.robot.commands.shooter.PrimeAndShoot;
-import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.commands.swerve.pid.Drive;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;

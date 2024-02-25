@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,13 +13,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+
 import frc.robot.autos.*;
 import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.swerve.MoveToPose;
 import frc.robot.commands.swerve.pid.Drive;
 import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.commands.vision.DriveToAprilTag;
+import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.subsystems.*;
 
 /**
@@ -40,21 +44,24 @@ public class RobotContainer {
     private final int rightTriggerID = XboxController.Axis.kRightTrigger.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton reset = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton kX = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton kY = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton kA = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton kB = new JoystickButton(driver, XboxController.Button.kB.value);
 
+    private final JoystickButton rightBumper = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton leftBumper = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    
     private final POVButton DPadUp = new POVButton(driver, 0);
     private final POVButton DPadDown = new POVButton(driver, 180);
-    private final POVButton DPadRight = new POVButton(driver, 90);
-    private final POVButton DPadLeft = new POVButton(driver, 270);
+    private final POVButton DPadLeft = new POVButton(driver, 90);
+    private final POVButton DPadRight = new POVButton(driver, 270);
 
     private Command testCommand;
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    // private final Shooter s_Shooter = new Shooter();
+    private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     private final Vision s_Vision;
 
@@ -68,21 +75,13 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(leftThumbYID), // translation axis
                 () -> -driver.getRawAxis(leftThumbXID), // strafe axis
                 () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
-                () -> robotCentric.getAsBoolean()
+                () -> kY.getAsBoolean()
             )
         );
 
-        // s_Shooter.setDefaultCommand(
-        //     new Shoot(
-        //         s_Shooter, 
-        //         () -> driver.getRawAxis(leftTriggerID),
-        //         () -> driver.getRawAxis(rightTriggerID)
-        //     )
-        // );
-
-        s_Intake.setDefaultCommand(
-            new IntakeControl(
-                s_Intake,
+        s_Shooter.setDefaultCommand(
+            new TeleopShoot(
+                s_Shooter, 
                 () -> driver.getRawAxis(leftTriggerID),
                 () -> driver.getRawAxis(rightTriggerID)
             )
@@ -99,9 +98,12 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        reset.onTrue(new Reset(s_Swerve));
-        // moveToPose.onTrue(new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))));
+        kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+
+        rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        leftBumper.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
+        leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
 
         // DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
         // DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 1, Rotation2d.fromDegrees(0))));
@@ -125,7 +127,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return new NewAuto(s_Swerve, s_Intake);
+        return new exampleAuto(s_Swerve);
     }
 }
