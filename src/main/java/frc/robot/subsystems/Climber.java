@@ -26,14 +26,20 @@ public class Climber {
         rightClimber.set(power);
     }
 
-    public void climb(){
+    public void leftclimb(){
         leftClimber.set(1);
+    }
+
+    public void rightclimb(){
         rightClimber.set(1);
     }
 
-    public void retract(){
-        leftClimber.set(-0.5);
-        rightClimber.set(-0.5);
+    public void leftretract(){
+        leftClimber.set(-1);
+    }
+
+    public void rightretract(){
+        rightClimber.set(-1);
     }
 
     public void stop() {

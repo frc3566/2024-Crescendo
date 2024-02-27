@@ -92,10 +92,14 @@ public class RobotContainer {
         RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
         LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
         LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        DPadUp.onTrue(new InstantCommand(() -> s_Climber.climb()));
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.rightclimb()));
         DPadUp.onFalse(new InstantCommand(() -> s_Climber.stop()));
-        DPadDown.onTrue(new InstantCommand(() -> s_Climber.retract()));
+        DPadDown.onTrue(new InstantCommand(() -> s_Climber.rightretract()));
         DPadDown.onFalse(new InstantCommand(() -> s_Climber.stop()));
+        DPadLeft.onTrue(new InstantCommand(() -> s_Climber.leftclimb()));
+        DPadLeft.onFalse(new InstantCommand(() -> s_Climber.stop()));
+        DPadRight.onTrue(new InstantCommand(() -> s_Climber.leftretract()));
+        DPadRight.onFalse(new InstantCommand(() -> s_Climber.stop()));
 
         // moveToPose.onTrue(new MoveToPose(s_Swerve));
     }
