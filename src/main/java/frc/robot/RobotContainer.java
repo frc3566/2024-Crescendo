@@ -87,6 +87,8 @@ public class RobotContainer {
             )
         );
 
+        s_Swerve.resetModulesToAbsolute();
+
         configureButtonBindings();
     }
 
