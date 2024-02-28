@@ -22,7 +22,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final Joystick driver1 = new Joystick(0);
+    private final Joystick driver2 = new Joystick(1);
 
     /* Joystick Axes */
     private final int leftThumbXID = XboxController.Axis.kLeftX.value;
@@ -32,24 +33,28 @@ public class RobotContainer {
     private final int leftTriggerID = XboxController.Axis.kLeftTrigger.value;
     private final int rightTriggerID = XboxController.Axis.kRightTrigger.value;
 
-    private final JoystickButton RB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    private final JoystickButton LB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton RB = new JoystickButton(driver1, XboxController.Button.kRightBumper.value);
+    private final JoystickButton LB = new JoystickButton(driver1, XboxController.Button.kLeftBumper.value);
+
+    private final JoystickButton D2RB = new JoystickButton(driver2, XboxController.Button.kRightBumper.value);
+    private final JoystickButton D2LB = new JoystickButton(driver2, XboxController.Button.kLeftBumper.value);
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton moveToPose = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton zeroGyro = new JoystickButton(driver1, XboxController.Button.kX.value);
+    private final JoystickButton moveToPose = new JoystickButton(driver1, XboxController.Button.kB.value);
+    private final JoystickButton robotCentric = new JoystickButton(driver1, XboxController.Button.kY.value);
     
-    private final POVButton DPadUp = new POVButton(driver, 0);
-    private final POVButton DPadDown = new POVButton(driver, 180);
-    private final POVButton DPadLeft = new POVButton(driver, 90);
-    private final POVButton DPadRight = new POVButton(driver, 270);
+    private final POVButton DPadUp = new POVButton(driver2, 0);
+    private final POVButton DPadDown = new POVButton(driver2, 180);
+    private final POVButton DPadLeft = new POVButton(driver2, 90);
+    private final POVButton DPadRight = new POVButton(driver2, 270);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
     private final Climber s_Climber = new Climber();
+    private final Amp s_Amp = new Amp();
     // private final Vision s_Vision;
 
     private double intakePower = 0.5;
@@ -60,9 +65,9 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(leftThumbYID), // translation axis
-                () -> -driver.getRawAxis(leftThumbXID), // strafe axis
-                () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
+                () -> -driver1.getRawAxis(leftThumbYID), // translation axis
+                () -> -driver1.getRawAxis(leftThumbXID), // strafe axis
+                () -> -driver1.getRawAxis(rightThumbXID),  // rotation axis
                 () -> robotCentric.getAsBoolean()
             )
         );
@@ -70,8 +75,8 @@ public class RobotContainer {
         s_Shooter.setDefaultCommand(
             new Shoot(
                 s_Shooter, 
-                () -> driver.getRawAxis(leftTriggerID),
-                () -> driver.getRawAxis(rightTriggerID)
+                () -> driver1.getRawAxis(leftTriggerID),
+                () -> driver1.getRawAxis(rightTriggerID)
             )
         );
 
@@ -88,18 +93,30 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         moveToPose.onTrue(new MoveToPose(s_Swerve));
+
         RB.onTrue(new InstantCommand(() -> s_Intake.eject()));
         RB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+
         LB.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
         LB.onFalse(new InstantCommand(() -> s_Intake.stop()));
+
         DPadUp.onTrue(new InstantCommand(() -> s_Climber.rightclimb()));
         DPadUp.onFalse(new InstantCommand(() -> s_Climber.stop()));
+
         DPadDown.onTrue(new InstantCommand(() -> s_Climber.rightretract()));
         DPadDown.onFalse(new InstantCommand(() -> s_Climber.stop()));
+
         DPadLeft.onTrue(new InstantCommand(() -> s_Climber.leftclimb()));
         DPadLeft.onFalse(new InstantCommand(() -> s_Climber.stop()));
+
         DPadRight.onTrue(new InstantCommand(() -> s_Climber.leftretract()));
         DPadRight.onFalse(new InstantCommand(() -> s_Climber.stop()));
+
+        D2LB.onTrue(new InstantCommand(() -> s_Amp.extend()));
+        D2LB.onFalse(new InstantCommand(() -> s_Amp.stop()));
+
+        D2RB.onTrue(new InstantCommand(() -> s_Amp.retract()));
+        D2RB.onFalse(new InstantCommand(() -> s_Amp.stop()));
 
         // moveToPose.onTrue(new MoveToPose(s_Swerve));
     }
