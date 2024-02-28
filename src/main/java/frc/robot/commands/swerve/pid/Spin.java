@@ -69,7 +69,6 @@ public class Spin extends Command {
     public void end(boolean interrupted) {
         isRunning = false;
         s_Swerve.drive(new Translation2d(), 0, true, true);
-        s_Swerve.zeroGyro();
     }
 
     @Override
