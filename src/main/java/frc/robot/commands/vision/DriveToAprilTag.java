@@ -39,6 +39,7 @@ public class DriveToAprilTag extends Command {
     public void initialize() {
         System.out.println("Running DriveToAprilTag:");
         interrupted = false;
+        counter = 0;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class DriveToAprilTag extends Command {
         
         Pose2d poseToAprilTagMinusGap = new Pose2d(
             poseToAprilTag.getTranslation().minus(new Translation2d(
-                cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure, 0)),
+                cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure, poseToAprilTag.getRotation())),
             poseToAprilTag.getRotation()
         );
 
