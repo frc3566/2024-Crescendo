@@ -82,10 +82,10 @@ public class DriveToAprilTag extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        commandGroup.cancel();
+        this.interrupted = true;
         poseToAprilTag = new Pose2d();
         commandGroup = new SequentialCommandGroup();
-        this.interrupted = true;
-        commandGroup.cancel();
     }
 
     @Override
