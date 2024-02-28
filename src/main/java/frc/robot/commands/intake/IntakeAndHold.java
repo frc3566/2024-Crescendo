@@ -13,7 +13,7 @@ public class IntakeAndHold extends SequentialCommandGroup {
     private final double intakeReverseSpeed = -0.1;
 
     private final double intakeDeadlineSeconds = 20;    
-    private final double reverseTimeSeconds = 0.3;
+    private final double reverseTimeSeconds = 1.0;
 
     public IntakeAndHold(Intake s_Intake, Shooter s_Shooter, BooleanSupplier buttonHeld) {
         Command intake = new IntakeReverseShooterTimed(s_Intake, s_Shooter, () -> intakeSpeed, () -> shooterReverseSpeed, intakeDeadlineSeconds);
