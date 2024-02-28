@@ -90,6 +90,10 @@ public class RobotContainer {
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         kY.onTrue(new PrimeAndShoot(s_Shooter, 0.7));
         kB.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> kB.getAsBoolean()));
+        DPadDown.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.2)));
+        DPadDown.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+        DPadUp.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.2)));
+        DPadUp.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
 
         rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
         rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
