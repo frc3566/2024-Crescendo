@@ -88,7 +88,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        kY.onTrue(new PrimeAndShoot(s_Shooter, 0.7));
+        kY.onTrue(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
         kB.onTrue(new InstantCommand(() -> new IntakeAndHold(s_Intake, s_Shooter, () -> kB.getAsBoolean()).schedule()));
         DPadDown.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.2)));
         DPadDown.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));

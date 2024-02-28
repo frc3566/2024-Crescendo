@@ -15,10 +15,11 @@ public class PrimeAndShoot extends Command {
 
     private Timer timer = new Timer();
 
-    public PrimeAndShoot(Shooter s_Shooter, double targetSpeed) {
+    public PrimeAndShoot(Shooter s_Shooter, Intake s_Intake, double targetSpeed) {
         this.s_Shooter = s_Shooter;
+        this.s_Intake = s_Intake;
         this.targetSpeed = targetSpeed;
-        addRequirements(s_Shooter);
+        addRequirements(s_Shooter, s_Intake);
     }
 
     @Override
