@@ -54,6 +54,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
+    private final Climber s_Climber = new Climber();
     // private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -90,10 +91,16 @@ public class RobotContainer {
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         kY.onTrue(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
         kB.onTrue(new InstantCommand(() -> new IntakeAndHold(s_Intake, s_Shooter, () -> kB.getAsBoolean()).schedule()));
-        DPadDown.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.2)));
+
+        DPadDown.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
         DPadDown.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
-        DPadUp.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.2)));
+        DPadUp.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
         DPadUp.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+
+        DPadLeft.onTrue(new InstantCommand(() -> s_Climber.setPower(0.2)));
+        DPadLeft.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
+        DPadRight.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.2)));
+        DPadRight.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
 
         rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
         rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
