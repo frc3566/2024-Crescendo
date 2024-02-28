@@ -135,6 +135,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new exampleAuto(s_Swerve);
+        return new TwoPiece(s_Swerve, s_Intake, s_Shooter, s_Vision);
     }
 }

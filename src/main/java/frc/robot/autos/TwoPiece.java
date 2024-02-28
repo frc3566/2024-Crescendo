@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
@@ -10,20 +11,26 @@ import frc.robot.commands.intake.IntakeTest;
 import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.commands.swerve.pid.Drive;
+import frc.robot.commands.vision.DriveToAprilTag;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Vision;
 
 public class TwoPiece extends SequentialCommandGroup {
-    public TwoPiece(Swerve s_Swerve, Intake s_Intake, Shooter s_Shooter) {
+    public TwoPiece(Swerve s_Swerve, Intake s_Intake, Shooter s_Shooter, Vision s_Vision) {
         Command driveToFirstPosition = new Drive(s_Swerve, new Pose2d());
-        Command shoot = new PrimeAndShoot(s_Shooter, 0.7);
-        Command driveAndIntake = new DriveAndIntake(s_Swerve, s_Intake, s_Shooter, new Pose2d());
+        Command shootFirst = new PrimeAndShoot(s_Shooter, 0.7);
+        Command driveWhileIntaking = new DriveAndIntake(s_Swerve, s_Intake, s_Shooter, new Pose2d(-2, 0, new Rotation2d()));
+        Command lineUp = new DriveToAprilTag(s_Swerve, s_Vision);
+        Command shootSecond = new PrimeAndShoot(s_Shooter, 0.7);
         
         addCommands(
             driveToFirstPosition,
-            shoot,
-            driveAndIntake
+            shootFirst,
+            driveWhileIntaking,
+            lineUp,
+            shootSecond
         );
     }
 }
