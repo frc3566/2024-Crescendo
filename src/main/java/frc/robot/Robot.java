@@ -6,6 +6,7 @@ package frc.robot;
 
 import java.io.IOException;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -31,6 +32,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    CameraServer.startAutomaticCapture();
     ctreConfigs = new CTREConfigs();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
@@ -39,11 +41,7 @@ public class Robot extends TimedRobot {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    // try {
-    //   m_robotContainer = new RobotContainer();
-    // } catch (IOException e) {
-    //   e.printStackTrace();
-    // }
+
   }
   
 
