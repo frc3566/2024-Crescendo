@@ -1,23 +1,26 @@
 package frc.robot.commands.intake;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
-import frc.robot.commands.*;
 
 public class IntakeAndHold extends SequentialCommandGroup {
-    private final double intakeSpeed = 0.7;
+    private final double intakeSpeed = 0.9;
+    private final double shooterReverseSpeed = -0.2;
     private final double intakeReverseSpeed = -0.1;
 
-    public IntakeAndHold(Intake s_Intake, Shooter s_Shooter) {
-        Command intake = new TakeIn(s_Shooter, s_Intake);
-        Command buffer = new IntakeTest(s_Intake, () -> intakeReverseSpeed, 0.1);
+    private final double intakeDeadlineSeconds = 20;    
+    private final double reverseTimeSeconds = 0.3;
+
+    public IntakeAndHold(Intake s_Intake, Shooter s_Shooter, BooleanSupplier buttonHeld) {
+        Command intake = new IntakeReverseShooterTimed(s_Intake, s_Shooter, () -> intakeSpeed, () -> shooterReverseSpeed, intakeDeadlineSeconds);
+        Command reverseIntake = new IntakeTimed(s_Intake, () -> intakeReverseSpeed, reverseTimeSeconds);
 
         addCommands(
-            intake.andThen(buffer)
+            intake.onlyWhile(buttonHeld).andThen(reverseIntake)
         );
     }
 }

@@ -7,21 +7,23 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class IntakeTest extends Command {
+public class IntakeTimed extends Command {
     private Intake s_Intake;
-    DoubleSupplier power;
-    private double seconds;
-    private Timer timer = new Timer();
 
-    public IntakeTest(Intake s_Intake, DoubleSupplier power, double seconds) {
+    private DoubleSupplier power;
+
+    private Timer timer = new Timer();
+    private double deadline;
+
+    public IntakeTimed(Intake s_Intake, DoubleSupplier power, double seconds) {
         this.s_Intake = s_Intake;
         this.power = power;
-        this.seconds = seconds;
+        this.deadline = seconds;
         addRequirements(s_Intake);
     }
 
     @Override
-    public void initialize(){
+    public void initialize() {
         timer.reset();
         timer.start();
     }
@@ -38,6 +40,6 @@ public class IntakeTest extends Command {
 
     @Override
     public boolean isFinished(){
-        return timer.get() >= seconds;
+        return timer.get() >= deadline;
     }
 }

@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Intake;
 
 public class IntakeControl extends Command {
-
     private Intake s_Intake;
     private DoubleSupplier leftBumper, rightBumper;
 

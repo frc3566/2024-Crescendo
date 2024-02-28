@@ -10,14 +10,14 @@ import edu.wpi.first.wpilibj.Timer;
 public class PrimeAndShoot extends Command {
     private Shooter s_Shooter;
     private Intake s_Intake;
+
     private final double targetSpeed;
-    private Timer timer;
+
+    private Timer timer = new Timer();
 
     public PrimeAndShoot(Shooter s_Shooter, double targetSpeed) {
         this.s_Shooter = s_Shooter;
         this.targetSpeed = targetSpeed;
-        this.timer = new Timer();
-
         addRequirements(s_Shooter);
     }
 

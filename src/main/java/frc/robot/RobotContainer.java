@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
+import frc.robot.commands.intake.IntakeAndHold;
+import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.commands.swerve.MoveToPose;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -86,6 +88,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        kY.onTrue(new PrimeAndShoot(s_Shooter, 0.7));
+        kB.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> kB.getAsBoolean()));
 
         rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
         rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
