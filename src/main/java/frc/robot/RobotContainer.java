@@ -24,6 +24,7 @@ import frc.robot.commands.swerve.pid.Drive;
 import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.commands.vision.DriveToAprilTag;
 import frc.robot.commands.shooter.PrimeAndShoot;
+import frc.robot.commands.shooter.PrimeAndShoot2;
 import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.subsystems.*;
 
@@ -56,8 +57,8 @@ public class RobotContainer {
     
     private final POVButton DPadUp = new POVButton(driver, 0);
     private final POVButton DPadDown = new POVButton(driver, 180);
-    private final POVButton DPadLeft = new POVButton(driver, 90);
-    private final POVButton DPadRight = new POVButton(driver, 270);
+    private final POVButton DPadLeft = new POVButton(driver, 270);
+    private final POVButton DPadRight = new POVButton(driver, 90);
 
     private Command testCommand;
 
@@ -113,29 +114,38 @@ public class RobotContainer {
         kB.onTrue(new InstantCommand(() -> {
             if (testCommand == null || testCommand.isFinished()) {
                 testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
-                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1));
+                    .finallyDo(() -> new PrimeAndShoot(s_Shooter, s_Intake, 1.0).schedule());
                 testCommand.schedule();
             }
         }));
+
+        // kB.onTrue(new InstantCommand(() -> {
+        //     if (testCommand == null || testCommand.isFinished()) {
+        //         Command driveToAprilTag = new DriveToAprilTag(s_Swerve, s_Vision);
+        //         testCommand = driveToAprilTag.alongWith(new PrimeAndShoot2(s_Shooter, s_Intake, 1, () -> driveToAprilTag.isFinished()));
+        //         testCommand.schedule();
+        //     }
+        // }));
 
         kA.onTrue(new InstantCommand(() -> {
             if (testCommand != null) { testCommand.cancel(); }
             testCommand = null;
         }));
 
-        leftBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> leftBumper.getAsBoolean()));
-        rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
-        rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
+        leftBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
 
-        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(0.4)));
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(0.8)));
         DPadUp.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
-        DPadDown.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.4)));
+        DPadDown.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.8)));
         DPadDown.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
 
-        DPadLeft.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
-        DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
-        DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
-        DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+        DPadLeft.onTrue(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+        // DPadLeft.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
+        // DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+        // DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
+        // DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
     }
 
     /**

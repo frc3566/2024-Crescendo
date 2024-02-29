@@ -82,6 +82,7 @@ public class DriveToAprilTag extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        System.out.println("DriveToAprilTag finished");
         commandGroup.cancel();
         this.interrupted = true;
         poseToAprilTag = new Pose2d();
