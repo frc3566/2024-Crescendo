@@ -4,7 +4,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.commands.intake.RunIntakeWithTime;
+import frc.robot.commands.intake.IntakeTimed;
 import frc.robot.commands.swerve.MoveToPose;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,14 +17,14 @@ public class NewAuto extends SequentialCommandGroup {
     public NewAuto(Swerve s_Swerve, Intake s_Intake) {
         addCommands(
             // new InstantCommand(() -> s_Shooter.setPower(1)),
-            new RunIntakeWithTime(s_Intake, 0.5, 2),
+            new IntakeTimed(s_Intake, () -> 0.5, 2),
             // new InstantCommand(() -> s_Shooter.stop()),
             new MoveToPose(s_Swerve, new Pose2d(-1, 0 , Rotation2d.fromDegrees(0))),
             // new InstantCommand(() -> s_Shooter.setPower(1)),
             new WaitCommand(5),
-            new RunIntakeWithTime(s_Intake, 0.5, 2),
+            new IntakeTimed(s_Intake, () -> 0.5, 2),
             new WaitCommand(10),
-            new RunIntakeWithTime(s_Intake, 0.5, 2)
+            new IntakeTimed(s_Intake, () -> 0.5, 2)
             // new InstantCommand(() -> s_Shooter.stop())
         );
     }

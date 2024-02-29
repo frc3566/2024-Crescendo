@@ -22,6 +22,7 @@ import frc.robot.commands.swerve.MoveToPose;
 import frc.robot.commands.swerve.pid.Drive;
 import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.commands.vision.DriveToAprilTag;
+import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.subsystems.*;
 
@@ -116,7 +117,7 @@ public class RobotContainer {
 
         DPadUp.onTrue(new InstantCommand(() -> {
             if (testCommand == null || testCommand.isFinished()) {
-                testCommand = new DriveToAprilTag(s_Swerve, s_Vision);
+                testCommand = new DriveToAprilTag(s_Swerve, s_Vision).andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1));
                 testCommand.schedule();
             }
         }));

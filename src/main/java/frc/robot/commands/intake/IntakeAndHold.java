@@ -1,38 +1,26 @@
 package frc.robot.commands.intake;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
 
-public class IntakeAndHold extends Command {
-    private Shooter s_Shooter;
-    private Intake s_Intake;
-
-    private final double intakeSpeed = 0.5;
-    private final double shooterReverseSpeed = -0.3;
+public class IntakeAndHold extends SequentialCommandGroup {
+    private final double intakeSpeed = 0.9;
+    private final double shooterReverseSpeed = -0.2;
     private final double intakeReverseSpeed = -0.1;
 
-    public IntakeAndHold(Intake s_Intake, Shooter s_Shooter) {
-        this.s_Intake = s_Intake;
-        this.s_Shooter = s_Shooter;
-        addRequirements(s_Intake, s_Shooter);
-    }
-    
-    @Override
-    public void execute() {
-        s_Intake.setPower(intakeSpeed);
-        s_Shooter.setPower(shooterReverseSpeed);
-    }
+    private final double intakeDeadlineSeconds = 20;    
+    private final double reverseTimeSeconds = 0.7;
 
-    @Override
-    public void end(boolean interrupted) {
-        s_Intake.stop();
-        s_Shooter.stop();
-        
-        new InstantCommand(() -> s_Intake.setPower(intakeReverseSpeed))
-            .andThen(new WaitCommand(0.25), new InstantCommand(() -> s_Intake.stop()))
-            .execute();
+    public IntakeAndHold(Intake s_Intake, Shooter s_Shooter, BooleanSupplier buttonHeld) {
+        Command intake = new IntakeReverseShooterTimed(s_Intake, s_Shooter, () -> intakeSpeed, () -> shooterReverseSpeed, intakeDeadlineSeconds);
+        Command reverseIntake = new IntakeTimed(s_Intake, () -> intakeReverseSpeed, reverseTimeSeconds);
+
+        addCommands(
+            intake.onlyWhile(buttonHeld).andThen(reverseIntake)
+        );
     }
 }
