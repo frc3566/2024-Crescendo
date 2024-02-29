@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import frc.robot.autos.*;
+import frc.robot.commands.intake.IntakeAndHold;
 import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -64,6 +65,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
+    private final Climber s_Climber = new Climber();
     private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -102,32 +104,38 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-
-        rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
-        rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        leftBumper.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
-        leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
-
-        // DPadUp.onTrue(testCommand = new Spin(s_Swerve, new Pose2d(0, 0, Rotation2d.fromDegrees(90))));
-        // DPadLeft.onTrue(testCommand = new Drive(s_Swerve, new Pose2d(1, 1, Rotation2d.fromDegrees(0))));
-        // DPadRight.onTrue(testCommand = new DriveToPose(s_Swerve, new Pose2d(1, 0, Rotation2d.fromDegrees(90))));
-
-        Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
-        Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
-
-        DPadUp.onTrue(new InstantCommand(() -> {
+        
+        kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
+        kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        
+        // Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
+        // Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
+        kB.onTrue(new InstantCommand(() -> {
             if (testCommand == null || testCommand.isFinished()) {
-                testCommand = new DriveToAprilTag(s_Swerve, s_Vision).andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1));
+                testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
+                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1));
                 testCommand.schedule();
             }
         }));
 
-        // DPadLeft.onTrue(testCommand = new Drive(s_Swerve, target).andThen(new Spin(s_Swerve, target)));
-        // DPadRight.onTrue(testCommand = new Spin(s_Swerve, target).andThen(new Drive(s_Swerve, new Pose2d(single, new Rotation2d()))));
-        DPadDown.onTrue(new InstantCommand(() -> {
+        kA.onTrue(new InstantCommand(() -> {
             if (testCommand != null) { testCommand.cancel(); }
             testCommand = null;
         }));
+
+        leftBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> leftBumper.getAsBoolean()));
+        rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
+        rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
+
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(0.4)));
+        DPadUp.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
+        DPadDown.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.4)));
+        DPadDown.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
+
+        DPadLeft.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
+        DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+        DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
+        DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
     }
 
     /**
