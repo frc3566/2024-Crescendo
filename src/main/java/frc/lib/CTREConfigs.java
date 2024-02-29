@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import frc.robot.Constants;
 import frc.robot.Constants.Swerve;
 
-
 public final class CTREConfigs {
   public CANcoderConfiguration swerveCanCoderConfig;
 

@@ -3,6 +3,9 @@ package frc.robot;
 import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -10,10 +13,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+
 import frc.robot.autos.*;
-import frc.robot.commands.shooter.TeleopShoot;
-import frc.robot.commands.swerve.MoveToPose;
+import frc.robot.commands.intake.IntakeAndHold;
+import frc.robot.commands.intake.IntakeControl;
+import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.swerve.MoveToPose;
+import frc.robot.commands.swerve.pid.Drive;
+import frc.robot.commands.swerve.pid.Spin;
+import frc.robot.commands.vision.DriveToAprilTag;
+import frc.robot.commands.shooter.PrimeAndShoot;
+import frc.robot.commands.shooter.TeleopShoot;
 import frc.robot.subsystems.*;
 
 /**
@@ -48,14 +59,19 @@ public class RobotContainer {
     private final POVButton DPadLeft = new POVButton(driver, 90);
     private final POVButton DPadRight = new POVButton(driver, 270);
 
+    private Command testCommand;
+
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
     private final Intake s_Intake = new Intake();
-    // private final Vision s_Vision;
+    private final Climber s_Climber = new Climber();
+    private final Vision s_Vision;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
-    public RobotContainer() {
+    public RobotContainer() throws IOException {
+        s_Vision = new Vision();
+        
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -74,6 +90,8 @@ public class RobotContainer {
             )
         );
 
+        s_Swerve.resetModulesToAbsolute();
+
         configureButtonBindings();
     }
 
@@ -86,11 +104,38 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        
+        kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
+        kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        
+        // Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
+        // Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
+        kB.onTrue(new InstantCommand(() -> {
+            if (testCommand == null || testCommand.isFinished()) {
+                testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
+                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1));
+                testCommand.schedule();
+            }
+        }));
 
+        kA.onTrue(new InstantCommand(() -> {
+            if (testCommand != null) { testCommand.cancel(); }
+            testCommand = null;
+        }));
+
+        leftBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> leftBumper.getAsBoolean()));
         rightBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
         rightBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        leftBumper.onTrue(new InstantCommand(() -> s_Intake.takeIn()));
-        leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
+
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(0.4)));
+        DPadUp.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
+        DPadDown.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.4)));
+        DPadDown.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
+
+        DPadLeft.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
+        DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+        DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
+        DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
     }
 
     /**
@@ -99,6 +144,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new exampleAuto(s_Swerve);
+        return new TwoPiece(s_Swerve, s_Intake, s_Shooter, s_Vision);
     }
 }

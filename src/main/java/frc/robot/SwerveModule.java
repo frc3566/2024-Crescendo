@@ -161,11 +161,11 @@ public class SwerveModule {
   }
 
   public Rotation2d getCanCoderWithUpdate() {
-      var posVal = angleEncoder.getAbsolutePosition().waitForUpdate(0.1);
+      var posVal = angleEncoder.getAbsolutePosition().waitForUpdate(1);
       var val = Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
       if (posVal.getStatus().isOK()) {
-        System.out.println("Success in getting rotation!");
-        val = Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
+                val = Rotation2d.fromRotations(posVal.getValueAsDouble());
+        System.out.println("Success in getting rotation! Angle for posval: " + Rotation2d.fromRotations(posVal.getValueAsDouble()));
       }
       else {
         System.out.println("Failed to get accurate rotation! Error: " + posVal.getStatus());

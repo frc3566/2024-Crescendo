@@ -25,7 +25,6 @@ import edu.wpi.first.wpilibj.SPI;
 import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
-
   public static final class Swerve {
     public static final double stickDeadband = 0.1;
 
@@ -65,18 +64,18 @@ public final class Constants {
 
     /* Drive Motor PID Values */
     // public static final double driveKP = 0.02531425;
-    public static final double driveKP = 0;
+    public static final double driveKP = 0.000;
     public static final double driveKI = 0.0;
     public static final double driveKD = 0;
     public static final double driveKFF = 0.0;
 
     /* Drive Motor Characterization Values */
-    // public static final double driveKS = 0.3797225;
-    // public static final double driveKV = 3.109325;
-    // public static final double driveKA = 0.2600525;
-    public static final double driveKS = 0;
-    public static final double driveKV = 0;
-    public static final double driveKA = 0;
+    public static final double driveKS = 0.3797225;
+    public static final double driveKV = 3.1;
+    public static final double driveKA = 0.026;
+    // public static final double driveKS = 0;
+    // public static final double driveKV = 0;
+    // public static final double driveKA = 0.00;
 
     /* Drive Motor Conversion Factors */
     public static final double driveConversionPositionFactor = (wheelDiameter * Math.PI) / driveGearRatio;
@@ -104,7 +103,7 @@ public final class Constants {
       public static final int driveMotorID = 1;
       public static final int angleMotorID = 2;
       public static final int canCoderID = 0;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(319.66);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(317.54);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -114,7 +113,7 @@ public final class Constants {
       public static final int driveMotorID = 3;
       public static final int angleMotorID = 4;
       public static final int canCoderID = 1;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(108.81);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(106.4355);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -124,7 +123,7 @@ public final class Constants {
       public static final int driveMotorID = 5;
       public static final int angleMotorID = 6;
       public static final int canCoderID = 2;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(309.55);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(306.5625);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
@@ -136,23 +135,29 @@ public final class Constants {
       public static final int driveMotorID = 7;
       public static final int angleMotorID = 8;
       public static final int canCoderID = 3;
-      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(338.20);
+      public static final Rotation2d angleOffset = Rotation2d.fromDegrees(337.93);
       public static final SwerveModuleConstants constants = new SwerveModuleConstants(driveMotorID, angleMotorID,
           canCoderID, angleOffset);
     }
   }
 
   public static class Shooter {
-      public static int Left_Motor_Id = 10;
-      public static int Right_Motor_Id = 11;
+    public static int Left_Motor_Id = 10;
+    public static int Right_Motor_Id = 11;
+    public static int Amp_Motor_Id = 14;
   }
 
-  public static class Intake{
-      public static int Intake_Motor_Id = 9;
+  public static class Intake {
+    public static int Intake_Motor_Id = 9;
+  }
+  
+  public static class Climber {
+    public static int Left_Climber_Id = 12;
+    public static int Right_Climber_Id = 13;
   }
 
   public static class Vision {
-    public static final String APRIL_TAG_CAMERA_NAME = "Limelight1";
+    public static final String APRIL_TAG_CAMERA_NAME = "Limelight2";
 
     public static final double CAMERA_HEIGHT_METERS = 0;
     public static final double APRILTAG_HEIGHT_METERS = 0.6;
