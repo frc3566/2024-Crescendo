@@ -21,6 +21,7 @@ public class VisionSpin extends Command {
     private ProfiledPIDController thetaController;
 
     private boolean isRunning;
+    private boolean ranOnce;
 
     private static class SpinCommandConstants {
         public static final double kMaxAngularSpeedRadiansPerSecond = 2.5 * Math.PI; 
@@ -43,25 +44,28 @@ public class VisionSpin extends Command {
 
     @Override
     public void initialize() {
-
-        if (targetPose == null) {
-            targetPose = s_Vision.getPose();
-            return;
-        }
         isRunning = true;
-
-        this.thetaController = new ProfiledPIDController(
-            SpinCommandConstants.kPThetaController, 0, 0, SpinCommandConstants.kThetaControllerConstraints
-        );
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-        s_Swerve.zeroGyro();
-        s_Swerve.resetOdometry(new Pose2d());
-        thetaController.reset(new Pose2d().getRotation().getRadians());
+        ranOnce = false;
     }
 
     @Override
     public void execute() {
+        if (targetPose == new Pose2d()) {
+            targetPose = s_Vision.getPose();
+            return;
+        }
+        if (!ranOnce) {
+            this.thetaController = new ProfiledPIDController(
+                SpinCommandConstants.kPThetaController, 0, 0, SpinCommandConstants.kThetaControllerConstraints
+            );
+            thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+            s_Swerve.zeroGyro();
+            s_Swerve.resetOdometry(new Pose2d());
+            thetaController.reset(new Pose2d().getRotation().getRadians());
+            ranOnce = true;
+        }
+
         Pose2d currentPose = s_Swerve.getPose();
         System.out.println("Spin: " + currentPose);
 

@@ -1,16 +1,11 @@
 package frc.robot.commands.swerve.pid;
 
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
 
@@ -22,6 +17,7 @@ public class VisionDrive extends Command {
     private ProfiledPIDController driveController;
 
     private boolean isRunning;
+    private boolean ranOnce;
 
     private static class DriveCommandConstants {
         public static final double kPXController = 8;
@@ -41,21 +37,24 @@ public class VisionDrive extends Command {
     @Override
     public void initialize() {
         isRunning = true;
-
-        this.driveController = new ProfiledPIDController(DriveCommandConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
-            DriveCommandConstants.kMaxSpeedMetersPerSecond, DriveCommandConstants.kMaxAccelerationMetersPerSecondSquared
-        ));
-
-        s_Swerve.zeroGyro();
-        s_Swerve.resetOdometry(new Pose2d());
-        driveController.reset(new Translation2d().getDistance(targetPose.getTranslation()));
+        ranOnce =  false;
     }
 
     @Override
     public void execute() {
-        if (targetPose == null) {
+        if (targetPose == new Pose2d()) {
             targetPose = s_Vision.getPose();
             return;
+        }
+        if (!ranOnce) {
+            this.driveController = new ProfiledPIDController(DriveCommandConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
+                DriveCommandConstants.kMaxSpeedMetersPerSecond, DriveCommandConstants.kMaxAccelerationMetersPerSecondSquared
+            ));
+
+            s_Swerve.zeroGyro();
+            s_Swerve.resetOdometry(new Pose2d());
+            driveController.reset(new Translation2d().getDistance(targetPose.getTranslation()));
+            ranOnce = true;
         }
         Pose2d currentPose = s_Swerve.getPose();
         System.out.println("Drive: " + currentPose);
