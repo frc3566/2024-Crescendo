@@ -28,7 +28,7 @@ public class DriveToAprilTag extends Command {
     private static final double
         cameraToRobotFront = 0.5,
         speakerAprilTagGap = 1,
-        additionalGapForGoodMeasure = 1.0;
+        additionalGapForGoodMeasure = 0.8;
 
     public DriveToAprilTag(Swerve s_Swerve, Vision s_Vision) {
         this.s_Swerve = s_Swerve;

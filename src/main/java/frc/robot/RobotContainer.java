@@ -37,6 +37,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
+    private final Joystick driver2 = new Joystick(1);
 
     /* Joystick Axes */
     private final int leftThumbXID = XboxController.Axis.kLeftX.value;
@@ -59,6 +60,12 @@ public class RobotContainer {
     private final POVButton DPadDown = new POVButton(driver, 180);
     private final POVButton DPadLeft = new POVButton(driver, 270);
     private final POVButton DPadRight = new POVButton(driver, 90);
+
+    private final POVButton DPadUp2 = new POVButton(driver2, 0);
+    private final POVButton DPadDown2 = new POVButton(driver2, 180);
+
+    private final JoystickButton kY2 = new JoystickButton(driver2, XboxController.Button.kY.value);
+    private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
 
     private Command testCommand;
 
@@ -174,6 +181,16 @@ public class RobotContainer {
         // DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
         // DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
         // DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
+
+        DPadUp2.onTrue(new InstantCommand(() -> s_Climber.setLeftPower(0.4)));
+        DPadUp2.onFalse(new InstantCommand(() -> s_Climber.setLeftPower(0)));
+        DPadDown2.onTrue(new InstantCommand(() -> s_Climber.setLeftPower(-0.4)));
+        DPadDown2.onFalse(new InstantCommand(() -> s_Climber.setLeftPower(0)));
+
+        kY2.onTrue(new InstantCommand(() -> s_Climber.setRightPower(0.4)));
+        kY2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
+        kA2.onTrue(new InstantCommand(() -> s_Climber.setRightPower(-0.4)));
+        kA2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
     }
 
     /**
@@ -182,6 +199,8 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
+        return new Drive(s_Swerve, new Pose2d(new Translation2d(-0.94, Rotation2d.fromDegrees(-45)), new Rotation2d()))
+            .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+        // return new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
     }
 }
