@@ -114,7 +114,7 @@ public class RobotContainer {
         kB.onTrue(new InstantCommand(() -> {
             if (testCommand == null || testCommand.isFinished()) {
                 testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
-                    .finallyDo(() -> new PrimeAndShoot(s_Shooter, s_Intake, 1.0).schedule());
+                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
                 testCommand.schedule();
             }
         }));
