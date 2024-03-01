@@ -1,6 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -19,10 +21,8 @@ import frc.robot.commands.intake.IntakeAndHold;
 import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
-import frc.robot.commands.swerve.MoveToPose;
-import frc.robot.commands.swerve.pid.Drive;
-import frc.robot.commands.swerve.pid.Spin;
-import frc.robot.commands.vision.DriveToAprilTag;
+import frc.robot.commands.swerve.pid.*;
+import frc.robot.commands.vision.GetAprilTagPose;
 import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.PrimeAndShoot2;
 import frc.robot.commands.shooter.TeleopShoot;
@@ -71,7 +71,25 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() throws IOException {
+
+    CommandScheduler.getInstance()
+        .onCommandInitialize(
+            command ->
+                System.out.println(
+                    "Command interrupted: " +  command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandInterrupt(
+            command ->
+                System.out.println(
+                    "Command interrupted: " +  command.getName()));
+    CommandScheduler.getInstance()
+        .onCommandFinish(
+            command ->
+                System.out.println(
+                    "Command finished: " + command.getName()));
+
         s_Vision = new Vision();
+        s_Vision.resetPose();
         
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -111,10 +129,20 @@ public class RobotContainer {
         
         // Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
         // Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
+        // kB.onTrue(new InstantCommand(() -> {
+        //     if (testCommand == null || testCommand.isFinished()) {
+        //         testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
+        //             .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+        //         testCommand.schedule();
+        //     }
+        // }));
         kB.onTrue(new InstantCommand(() -> {
             if (testCommand == null || testCommand.isFinished()) {
-                testCommand = new DriveToAprilTag(s_Swerve, s_Vision)
-                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+                testCommand = new GetAprilTagPose(s_Vision)
+                    .andThen(new VisionDrive(s_Swerve, s_Vision))
+                    .andThen(new VisionSpin(s_Swerve, s_Vision))
+                    .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
+                    .andThen(new InstantCommand(() -> s_Vision.resetPose()));
                 testCommand.schedule();
             }
         }));

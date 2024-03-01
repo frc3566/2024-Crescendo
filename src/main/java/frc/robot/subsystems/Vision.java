@@ -31,12 +31,13 @@ import frc.robot.Constants;
 public class Vision extends SubsystemBase {
     private PhotonCamera apriltagCamera;
     private PhotonPoseEstimator poseEstimator;
+    private Pose2d targetPose;
 
     private static final List<Integer> BLUE_APRILTAG_IDS = List.of(7, 6, 1, 2, 14, 15, 16);
     private static final List<Integer> RED_APRILTAG_IDS = List.of(4, 5, 9, 10, 11, 12, 13);
     
     /* list of fiducial ids to look for depending on alliance */
-    private List<Integer> targetFiducialIds = List.of(7);
+    private List<Integer> targetFiducialIds = List.of(4);
 
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
@@ -79,6 +80,19 @@ public class Vision extends SubsystemBase {
         return target.map(e -> 
             e.getPoseAmbiguity() < 0.2 ? e : null
         );
+    }
+
+    public void writePose(Pose2d pose) {
+        targetPose = pose;
+        return;
+    }
+
+    public Pose2d getPose() {
+        return targetPose;
+    }
+
+    public void resetPose() {
+        targetPose = null;
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
