@@ -92,7 +92,7 @@ public class Vision extends SubsystemBase {
     }
 
     public void resetPose() {
-        targetPose = null;
+        targetPose = new Pose2d();
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
