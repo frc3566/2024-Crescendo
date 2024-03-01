@@ -50,11 +50,12 @@ public class VisionSpin extends Command {
 
     @Override
     public void execute() {
-        if (targetPose == new Pose2d()) {
+        targetPose = s_Vision.getPose();
+        if (targetPose == null) {
+            System.out.println("null target");
             targetPose = s_Vision.getPose();
-            return;
         }
-        if (!ranOnce) {
+        else if (!ranOnce) {
             this.thetaController = new ProfiledPIDController(
                 SpinCommandConstants.kPThetaController, 0, 0, SpinCommandConstants.kThetaControllerConstraints
             );
@@ -64,15 +65,16 @@ public class VisionSpin extends Command {
             s_Swerve.resetOdometry(new Pose2d());
             thetaController.reset(new Pose2d().getRotation().getRadians());
             ranOnce = true;
-        }
+        } else {
 
         Pose2d currentPose = s_Swerve.getPose();
-        System.out.println("Spin: " + currentPose);
+        System.out.println("Spin: " + currentPose + " and atgoal: " + thetaController.atGoal());
 
         double thetaVelocity = thetaController.atGoal() ? 0.0 : 
             thetaController.calculate(currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
 
         s_Swerve.drive(new Translation2d(), thetaVelocity, true, true);
+        }
     }
     
     @Override
@@ -83,6 +85,7 @@ public class VisionSpin extends Command {
 
     @Override
     public boolean isFinished() {
+        if (!ranOnce) return false;
         return atGoal();
     }
 

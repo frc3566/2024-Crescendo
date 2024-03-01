@@ -42,11 +42,13 @@ public class VisionDrive extends Command {
 
     @Override
     public void execute() {
-        if (targetPose == new Pose2d()) {
+        targetPose = s_Vision.getPose();
+        if (targetPose == null) {
             targetPose = s_Vision.getPose();
+            System.out.println("null target");
             return;
         }
-        if (!ranOnce) {
+        else if (!ranOnce) {
             this.driveController = new ProfiledPIDController(DriveCommandConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
                 DriveCommandConstants.kMaxSpeedMetersPerSecond, DriveCommandConstants.kMaxAccelerationMetersPerSecondSquared
             ));
@@ -55,9 +57,9 @@ public class VisionDrive extends Command {
             s_Swerve.resetOdometry(new Pose2d());
             driveController.reset(new Translation2d().getDistance(targetPose.getTranslation()));
             ranOnce = true;
-        }
+        } else {
         Pose2d currentPose = s_Swerve.getPose();
-        System.out.println("Drive: " + currentPose);
+        System.out.println("Drive: " + currentPose + " and atgoal: " + driveController.atGoal());
         
         /* reduce current distance (error) to 0 */
         double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
@@ -70,6 +72,7 @@ public class VisionDrive extends Command {
         );
 
         s_Swerve.drive(driveVelocity, 0, true, true);
+        }
     }
     
     @Override
@@ -80,6 +83,7 @@ public class VisionDrive extends Command {
 
     @Override
     public boolean isFinished() {
+        if (!ranOnce) return false;
         return atGoal();
     }
 

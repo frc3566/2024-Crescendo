@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
@@ -97,6 +98,7 @@ public class RobotContainer {
 
         s_Vision = new Vision();
         s_Vision.resetPose();
+        s_Vision.writePose(new Pose2d(0 , 0, Rotation2d.fromDegrees(0)));
         
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -149,7 +151,8 @@ public class RobotContainer {
                     .andThen(new VisionDrive(s_Swerve, s_Vision))
                     .andThen(new VisionSpin(s_Swerve, s_Vision))
                     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-                    .andThen(new InstantCommand(() -> s_Vision.resetPose()));
+                    .andThen(new InstantCommand(() -> s_Vision.resetPose()))
+                    .andThen(new PrintCommand("Finished"));
                 testCommand.schedule();
             }
         }));
@@ -163,8 +166,10 @@ public class RobotContainer {
         // }));
 
         kA.onTrue(new InstantCommand(() -> {
-            if (testCommand != null) { testCommand.cancel(); }
-            testCommand = null;
+            if (testCommand != null) { 
+                System.out.println("test finished: " + testCommand.isFinished());
+                testCommand.cancel(); }
+                testCommand = null;
         }));
 
         rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
