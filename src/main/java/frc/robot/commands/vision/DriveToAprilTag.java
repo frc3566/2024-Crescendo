@@ -22,7 +22,8 @@ public class DriveToAprilTag extends Command {
     private Command commandGroup = new SequentialCommandGroup();
 
     private int counter = 0;
-    private boolean interrupted = false;
+    private boolean scheduled = false;
+    private boolean ended = false;
 
     private static final double
         cameraToRobotFront = 0.5,
@@ -38,13 +39,16 @@ public class DriveToAprilTag extends Command {
     @Override
     public void initialize() {
         System.out.println("Running DriveToAprilTag:");
-        interrupted = false;
+        ended = false;
+        scheduled = false;
         counter = 0;
+        poseToAprilTag = new Pose2d();
+        commandGroup = new SequentialCommandGroup();
     }
 
     @Override
     public void execute() {
-        if (!poseToAprilTag.equals(new Pose2d()) || commandGroup.isScheduled() || commandGroup.isFinished()) return;
+        if (scheduled) return;
 
         var result = s_Vision.getAprilTag();
         if (result.isEmpty()) {
@@ -76,21 +80,19 @@ public class DriveToAprilTag extends Command {
 
         commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap).andThen(new Spin(s_Swerve, poseToAprilTagMinusGap));
         // commandGroup = new Spin(s_Swerve, poseToAprilTagMinusGap).andThen(new Drive(s_Swerve, singleDimensionTranslation));
-        // commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap);
         commandGroup.schedule();
+        scheduled = true;
     }
 
     @Override
     public void end(boolean interrupted) {
         System.out.println("DriveToAprilTag finished");
         commandGroup.cancel();
-        this.interrupted = true;
-        poseToAprilTag = new Pose2d();
-        commandGroup = new SequentialCommandGroup();
+        ended = true;
     }
 
     @Override
     public boolean isFinished() {
-        return commandGroup.isFinished() || interrupted;
+        return commandGroup.isFinished() || ended;
     }
 }
