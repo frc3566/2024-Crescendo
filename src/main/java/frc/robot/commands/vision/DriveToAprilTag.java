@@ -44,6 +44,9 @@ public class DriveToAprilTag extends Command {
         counter = 0;
         poseToAprilTag = new Pose2d();
         commandGroup = new SequentialCommandGroup();
+
+        // commandGroup = new Drive(s_Swerve, new Pose2d()).andThen(new Spin(s_Swerve, new Pose2d()));
+        // commandGroup.schedule();
     }
 
     @Override

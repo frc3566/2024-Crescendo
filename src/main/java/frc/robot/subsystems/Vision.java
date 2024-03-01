@@ -36,7 +36,7 @@ public class Vision extends SubsystemBase {
     private static final List<Integer> RED_APRILTAG_IDS = List.of(4, 5, 9, 10, 11, 12, 13);
     
     /* list of fiducial ids to look for depending on alliance */
-    private List<Integer> targetFiducialIds = List.of(4);
+    private List<Integer> targetFiducialIds = List.of(7);
 
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
@@ -52,6 +52,8 @@ public class Vision extends SubsystemBase {
             else { targetFiducialIds = RED_APRILTAG_IDS; }
             return null;
         });
+
+        System.out.println("Targetting fiducial ids: " + targetFiducialIds);
     }
 
     /**

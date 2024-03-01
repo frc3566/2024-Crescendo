@@ -157,7 +157,7 @@ public final class Constants {
   }
 
   public static class Vision {
-    public static final String APRIL_TAG_CAMERA_NAME = "Limelight2";
+    public static final String APRIL_TAG_CAMERA_NAME = "Limelight1";
 
     public static final double CAMERA_HEIGHT_METERS = 0;
     public static final double APRILTAG_HEIGHT_METERS = 0.6;

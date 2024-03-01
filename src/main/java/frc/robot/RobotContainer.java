@@ -76,8 +76,8 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(leftThumbYID), // translation axis
-                () -> -driver.getRawAxis(leftThumbXID), // strafe axis
+                () -> driver.getRawAxis(leftThumbYID), // translation axis
+                () -> driver.getRawAxis(leftThumbXID), // strafe axis
                 () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
                 () -> kY.getAsBoolean()
             )
@@ -136,7 +136,7 @@ public class RobotContainer {
         leftBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
         leftBumper.onFalse(new InstantCommand(() -> s_Intake.stop()));
 
-        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(0.8)));
+        DPadUp.onTrue(new InstantCommand(() -> s_Climber.setPower(1.0)));
         DPadUp.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
         DPadDown.onTrue(new InstantCommand(() -> s_Climber.setPower(-0.8)));
         DPadDown.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
@@ -154,6 +154,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new TwoPiece(s_Swerve, s_Intake, s_Shooter, s_Vision);
+        return new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
     }
 }
