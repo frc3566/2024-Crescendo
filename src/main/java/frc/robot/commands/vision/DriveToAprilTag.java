@@ -20,6 +20,8 @@ public class DriveToAprilTag extends Command {
     private Pose2d poseToAprilTag = new Pose2d();
 
     private Command commandGroup = new SequentialCommandGroup();
+    private Command drive = new Command() {};
+    private Command spin = new Command() {};
 
     private int counter = 0;
     private boolean scheduled = false;
@@ -44,9 +46,8 @@ public class DriveToAprilTag extends Command {
         counter = 0;
         poseToAprilTag = new Pose2d();
         commandGroup = new SequentialCommandGroup();
-
-        // commandGroup = new Drive(s_Swerve, new Pose2d()).andThen(new Spin(s_Swerve, new Pose2d()));
-        // commandGroup.schedule();
+        drive = new Command() {};
+        spin = new Command() {};
     }
 
     @Override
@@ -81,7 +82,9 @@ public class DriveToAprilTag extends Command {
 
         System.out.println("> Translation component: " + singleDimensionTranslation);
 
-        commandGroup = new Drive(s_Swerve, poseToAprilTagMinusGap).andThen(new Spin(s_Swerve, poseToAprilTagMinusGap));
+        drive = new Drive(s_Swerve, poseToAprilTagMinusGap);
+        spin = new Spin(s_Swerve, poseToAprilTagMinusGap);
+        commandGroup = drive.andThen(spin);
         // commandGroup = new Spin(s_Swerve, poseToAprilTagMinusGap).andThen(new Drive(s_Swerve, singleDimensionTranslation));
         commandGroup.schedule();
         scheduled = true;
@@ -96,6 +99,7 @@ public class DriveToAprilTag extends Command {
 
     @Override
     public boolean isFinished() {
-        return commandGroup.isFinished() || ended;
+        return drive.isFinished() && spin.isFinished() || ended;
+        // return commandGroup.isFinished() || ended;
     }
 }
