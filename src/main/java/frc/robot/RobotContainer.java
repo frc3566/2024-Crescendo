@@ -7,6 +7,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -70,6 +71,7 @@ public class RobotContainer {
     private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
 
     private Command testCommand;
+    private boolean testCommandIsRunning = false;
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -80,22 +82,9 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() throws IOException {
-
-    CommandScheduler.getInstance()
-        .onCommandInitialize(
-            command ->
-                System.out.println(
-                    "Command interrupted: " +  command.getName()));
-    CommandScheduler.getInstance()
-        .onCommandInterrupt(
-            command ->
-                System.out.println(
-                    "Command interrupted: " +  command.getName()));
-    CommandScheduler.getInstance()
-        .onCommandFinish(
-            command ->
-                System.out.println(
-                    "Command finished: " + command.getName()));
+        CommandScheduler.getInstance().onCommandInitialize(command -> System.out.println("Command interrupted: " + command.getName()));
+        CommandScheduler.getInstance().onCommandInterrupt(command -> System.out.println("Command interrupted: " + command.getName()));
+        CommandScheduler.getInstance().onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
         s_Vision = new Vision();
         s_Vision.resetPose();
@@ -120,6 +109,8 @@ public class RobotContainer {
         );
 
         s_Swerve.resetModulesToAbsolute();
+
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         configureButtonBindings();
     }
@@ -146,15 +137,19 @@ public class RobotContainer {
         //         testCommand.schedule();
         //     }
         // }));
+
         kB.onTrue(new InstantCommand(() -> {
-            if (testCommand == null || testCommand.isFinished()) {
+            if (!testCommandIsRunning) {
                 testCommand = new GetAprilTagPose(s_Vision)
                     .andThen(new VisionDrive(s_Swerve, s_Vision))
                     .andThen(new VisionSpin(s_Swerve, s_Vision))
                     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
                     .andThen(new InstantCommand(() -> s_Vision.resetPose()))
                     .andThen(new PrintCommand("Finished"));
+
+                testCommand.finallyDo(() -> { testCommandIsRunning = false; });
                 testCommand.schedule();
+                testCommandIsRunning = true;
             }
         }));
 

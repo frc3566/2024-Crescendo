@@ -20,8 +20,8 @@ public class DriveToAprilTag extends Command {
     private Pose2d poseToAprilTag = new Pose2d();
 
     private Command commandGroup = new SequentialCommandGroup();
-    private Command drive = new Command() {};
-    private Command spin = new Command() {};
+    private Drive drive;
+    private Spin spin;
 
     private int counter = 0;
     private boolean scheduled = false;
@@ -46,8 +46,8 @@ public class DriveToAprilTag extends Command {
         counter = 0;
         poseToAprilTag = new Pose2d();
         commandGroup = new SequentialCommandGroup();
-        drive = new Command() {};
-        spin = new Command() {};
+        drive = null;
+        spin = null;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class DriveToAprilTag extends Command {
 
     @Override
     public boolean isFinished() {
-        return drive.isFinished() && spin.isFinished() || ended;
+        return drive != null && spin != null && !drive.isRunning() && !spin.isRunning() || ended;
         // return commandGroup.isFinished() || ended;
     }
 }
