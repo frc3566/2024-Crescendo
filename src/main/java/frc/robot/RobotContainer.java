@@ -23,6 +23,7 @@ import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.swerve.pid.*;
+import frc.robot.commands.vision.DriveToAprilTag;
 import frc.robot.commands.vision.GetAprilTagPose;
 import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.PrimeAndShoot2;
@@ -166,10 +167,8 @@ public class RobotContainer {
         // }));
 
         kA.onTrue(new InstantCommand(() -> {
-            if (testCommand != null) { 
-                System.out.println("test finished: " + testCommand.isFinished());
-                testCommand.cancel(); }
-                testCommand = null;
+            if (testCommand != null) { testCommand.cancel(); }
+            testCommand = null;
         }));
 
         rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
@@ -205,7 +204,19 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         return new Drive(s_Swerve, new Pose2d(new Translation2d(-0.94, Rotation2d.fromDegrees(-45)), new Rotation2d()))
-            .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
-        // return new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
+            .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
+            .andThen(new Drive(s_Swerve, new Pose2d(new Translation2d(-2, 0), new Rotation2d())));
+
+        // return new Drive(s_Swerve, new Pose2d(new Translation2d(-2, 0), new Rotation2d()));
+            
+        // return new Drive(s_Swerve, new Pose2d(-1, 0, new Rotation2d()))
+        //     .andThen(new GetAprilTagPose(s_Vision))
+        //     .andThen(new VisionDrive(s_Swerve, s_Vision))
+        //     .andThen(new VisionSpin(s_Swerve, s_Vision))
+        //     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
+        //     .andThen(new InstantCommand(() -> s_Vision.resetPose()))
+        //     .andThen(new PrintCommand("Finished"));
+
+        // return new Command() {};
     }
 }
