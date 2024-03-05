@@ -11,9 +11,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.commands.WithStatus;
 import frc.robot.subsystems.Swerve;
 
-public class DriveToPose extends Command {
+/* TODO: tune pid values */
+public class DriveToPose extends Command implements WithStatus {
     private Swerve s_Swerve;
     private Pose2d targetPose;
 

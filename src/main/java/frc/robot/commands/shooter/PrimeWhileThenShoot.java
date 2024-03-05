@@ -8,7 +8,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
-public class PrimeAndShoot2 extends Command {
+public class PrimeWhileThenShoot extends Command {
     private Shooter s_Shooter;
     private Intake s_Intake;
 
@@ -19,7 +19,7 @@ public class PrimeAndShoot2 extends Command {
     private Timer timer = new Timer();
     private Timer intakeTimer = new Timer();
 
-    public PrimeAndShoot2(Shooter s_Shooter, Intake s_Intake, double targetSpeed, BooleanSupplier primeUntilTrue) {
+    public PrimeWhileThenShoot(Shooter s_Shooter, Intake s_Intake, double targetSpeed, BooleanSupplier primeUntilTrue) {
         this.s_Shooter = s_Shooter;
         this.s_Intake = s_Intake;
         this.targetSpeed = targetSpeed;
@@ -37,7 +37,7 @@ public class PrimeAndShoot2 extends Command {
     @Override
     public void execute() {
         s_Shooter.setPower(targetSpeed);
-        if (timer.get() >= 1 && primeUntilTrue.getAsBoolean() && intakeTimer.get() == 0) {
+        if (timer.get() >= 0.7 && primeUntilTrue.getAsBoolean() && intakeTimer.get() == 0) {
             intakeTimer.start();
             s_Intake.setPower(0.9);
         }
@@ -53,6 +53,6 @@ public class PrimeAndShoot2 extends Command {
 
     @Override 
     public boolean isFinished() {
-        return intakeTimer.get() >= 1.5 && primeUntilTrue.getAsBoolean();
+        return intakeTimer.get() >= 0.3 && primeUntilTrue.getAsBoolean();
     }
 }

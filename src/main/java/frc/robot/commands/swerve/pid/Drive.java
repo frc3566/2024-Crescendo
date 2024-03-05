@@ -1,6 +1,8 @@
 package frc.robot.commands.swerve.pid;
 
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,10 +13,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.commands.WithStatus;
 import frc.robot.subsystems.Swerve;
 
-public class Drive extends Command {
+public class Drive extends Command implements WithStatus {
     private Swerve s_Swerve;
+    private Supplier<Pose2d> targetPoseSupplier;
     private Pose2d targetPose;
 
     private ProfiledPIDController driveController;
@@ -27,9 +31,9 @@ public class Drive extends Command {
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     }
 
-    public Drive(Swerve s_Swerve, Pose2d targetPose) {
+    public Drive(Swerve s_Swerve, Supplier<Pose2d> targetPoseSupplier) {
         this.s_Swerve = s_Swerve;
-        this.targetPose = targetPose;
+        this.targetPoseSupplier = targetPoseSupplier;
 
         isRunning = false;
 
@@ -39,6 +43,8 @@ public class Drive extends Command {
     @Override
     public void initialize() {
         isRunning = true;
+
+        targetPose = targetPoseSupplier.get();
 
         this.driveController = new ProfiledPIDController(DriveCommandConstants.kPXController, 0, 0, new TrapezoidProfile.Constraints(
             DriveCommandConstants.kMaxSpeedMetersPerSecond, DriveCommandConstants.kMaxAccelerationMetersPerSecondSquared

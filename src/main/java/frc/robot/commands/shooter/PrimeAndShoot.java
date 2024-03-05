@@ -45,6 +45,6 @@ public class PrimeAndShoot extends Command {
 
     @Override 
     public boolean isFinished() {
-        return timer.get() >= 2.0;
+        return timer.get() >= 1.0;
     }
 }
