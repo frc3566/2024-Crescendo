@@ -162,15 +162,17 @@ public class RobotContainer {
 
         kB.onTrue(new InstantCommand(() -> {
             if (!testCommandIsRunning) {
-                s_Swerve.off();
-                AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-                testCommand = alignWithAprilTag
-                    .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-                    .finallyDo(() -> testCommandIsRunning = false)
-                    .withName("AlignWhilePriming");
+                if(!s_Vision.getAprilTag().isEmpty()) {
+                    s_Swerve.off();
+                    AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
+                    testCommand = alignWithAprilTag
+                        .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
+                        .finallyDo(() -> testCommandIsRunning = false)
+                        .withName("AlignWhilePriming");
 
-                testCommand.schedule();
-                testCommandIsRunning = true;
+                    testCommand.schedule();
+                    testCommandIsRunning = true;
+                }
             }
         }).withName("InitiateAlignWithAprilTag"));
 
