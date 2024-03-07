@@ -27,6 +27,7 @@ import frc.robot.commands.swerve.pid.*;
 import frc.robot.commands.vision.AlignWithAprilTag;
 // import frc.robot.commands.vision.DriveToAprilTag;
 import frc.robot.commands.vision.GetAprilTagPose;
+import frc.robot.commands.vision.SupplyAprilTagPose;
 import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.PrimeWhileThenShoot;
 import frc.robot.commands.shooter.TeleopShoot;
@@ -89,7 +90,6 @@ public class RobotContainer {
 
         s_Vision = new Vision();
         s_Vision.resetPose();
-        s_Vision.writePose(new Pose2d(0 , 0, Rotation2d.fromDegrees(0)));
         
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
@@ -108,6 +108,10 @@ public class RobotContainer {
                 () -> driver.getRawAxis(rightTriggerID)
             )
         );
+
+        // s_Vision.setDefaultCommand(
+            // new SupplyAprilTagPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose)
+        // );
 
         s_Swerve.resetModulesToAbsolute();
 
@@ -160,21 +164,35 @@ public class RobotContainer {
         //     }
         // }));
 
-        kB.onTrue(new InstantCommand(() -> {
-            if (!testCommandIsRunning) {
-                if(!s_Vision.getAprilTag().isEmpty()) {
-                    s_Swerve.off();
-                    AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-                    testCommand = alignWithAprilTag
-                        .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-                        .finallyDo(() -> testCommandIsRunning = false)
-                        .withName("AlignWhilePriming");
+        // kB.onTrue(new InstantCommand(() -> {
+        //     if (!testCommandIsRunning) {
+        //         if (!s_Vision.getAprilTag().isEmpty()) {
+        //             s_Swerve.off();
+        //             AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
+        //             testCommand = alignWithAprilTag
+        //                 .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
+        //                 .finallyDo(() -> testCommandIsRunning = false)
+        //                 .withName("AlignWhilePriming");
 
-                    testCommand.schedule();
-                    testCommandIsRunning = true;
-                }
+        //             testCommand.schedule();
+        //             testCommandIsRunning = true;
+        //         }
+        //     }
+        // }).withName("InitiateAlignWithAprilTag"));
+
+        kB.whileTrue(new InstantCommand(() -> {
+            if (!testCommandIsRunning && !s_Vision.getAprilTag().isEmpty()) {
+                s_Swerve.off();
+                AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
+                testCommand = alignWithAprilTag
+                    .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
+                    .finallyDo(() -> testCommandIsRunning = false)
+                    .withName("AlignWhilePriming");
+                
+                testCommand.schedule();
+                testCommandIsRunning = true;
             }
-        }).withName("InitiateAlignWithAprilTag"));
+        }).withName("InitiateAlignWithAprilTag").repeatedly());
 
         kA.onTrue(new InstantCommand(() -> {
             if (testCommand != null) {

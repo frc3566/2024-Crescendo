@@ -43,11 +43,14 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
     public void execute() {
         if (targetPoseComputed) { return; }
 
+        if (counter > 10) { this.cancel(); }
+
         var result = s_Vision.getAprilTag();
+        
         if (result.isEmpty()) {
             System.out.println("Cycle: " + ++counter);
             return;
-        } 
+        }
 
         System.out.println("Cycle: " + counter);
 
