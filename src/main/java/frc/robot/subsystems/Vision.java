@@ -17,9 +17,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.commands.vision.SupplyAprilTagPose;
 
 
 /* Make sure that 
@@ -48,13 +51,18 @@ public class Vision extends SubsystemBase {
             Constants.Vision.ROBOT_TO_CAMERA
         );
 
+        refreshTargetFiducialIds();
+        System.out.println("Targetting fiducial ids: " + targetFiducialIds);
+    }
+
+    public List<Integer> refreshTargetFiducialIds() {
         DriverStation.getAlliance().map(alliance -> {
             if (alliance == DriverStation.Alliance.Blue) { targetFiducialIds = BLUE_APRILTAG_IDS; }
-            else { targetFiducialIds = RED_APRILTAG_IDS; }
+            else if (alliance == DriverStation.Alliance.Red) { targetFiducialIds = RED_APRILTAG_IDS; }
             return null;
         });
 
-        System.out.println("Targetting fiducial ids: " + targetFiducialIds);
+        return targetFiducialIds;
     }
 
     /**
@@ -84,7 +92,6 @@ public class Vision extends SubsystemBase {
 
     public void writePose(Pose2d pose) {
         targetPose = pose;
-        return;
     }
 
     public Pose2d getPose() {
@@ -92,7 +99,12 @@ public class Vision extends SubsystemBase {
     }
 
     public void resetPose() {
-        targetPose = null;
+        targetPose = new Pose2d();
+        
+    }
+
+    public Command defaultCommand() {
+        return new SupplyAprilTagPose(this, new Pose2d(), this::writePose);
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {
