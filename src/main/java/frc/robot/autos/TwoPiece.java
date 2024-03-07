@@ -20,16 +20,16 @@ public class TwoPiece extends SequentialCommandGroup {
     public TwoPiece(Swerve s_Swerve, Intake s_Intake, Shooter s_Shooter, Vision s_Vision) {
         Command driveToFirstPosition = new Drive(s_Swerve, new Pose2d());
         Command shootFirst = new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
-        Command driveWhileIntaking = new DriveAndIntake(s_Swerve, s_Intake, s_Shooter, new Pose2d(-2, 0, new Rotation2d()));
-        Command lineUp = new DriveToAprilTag(s_Swerve, s_Vision);
-        Command shootSecond = new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
+        // Command driveWhileIntaking = new DriveAndIntake(s_Swerve, s_Intake, s_Shooter, new Pose2d(-2, 0, new Rotation2d()));
+        // Command lineUp = new DriveToAprilTag(s_Swerve, s_Vision);
+        // Command shootSecond = new PrimeAndShoot(s_Shooter, s_Intake, 1.0);
         
         addCommands(
             driveToFirstPosition,
-            shootFirst,
-            driveWhileIntaking,
-            lineUp,
-            shootSecond
+            shootFirst
+            // driveWhileIntaking,
+            // lineUp,
+            // shootSecond
         );
     }
 }
