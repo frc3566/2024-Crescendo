@@ -94,6 +94,10 @@ public class Vision extends SubsystemBase {
         targetPose = pose;
     }
 
+    public Rotation2d limitRange(Rotation2d angle) {
+        return Rotation2d.fromDegrees(Math.min(Math.max(angle.getDegrees(), -45), 45));
+    }
+    
     public Pose2d getPose() {
         return targetPose;
     }
