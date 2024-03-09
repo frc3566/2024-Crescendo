@@ -26,6 +26,8 @@ public class RadiusPose extends Command implements WithStatus {
         additionalGapForGoodMeasure = 0.75;
 
     private static final double radius = cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure;
+    
+    private static final double angleLimit = 45;
 
     public RadiusPose(Vision s_Vision, Pose2d currentPose, Consumer<Pose2d> setTargetPose) {
         this.s_Vision = s_Vision;
@@ -40,7 +42,6 @@ public class RadiusPose extends Command implements WithStatus {
         counter = 0;
     }
 
-    /* TODO: take currentPose into account */
     @Override
     public void execute() {
         if (targetPoseComputed) { return; }
@@ -64,17 +65,20 @@ public class RadiusPose extends Command implements WithStatus {
         Rotation2d facingAngle = poseToAprilTag.getRotation();
         Rotation2d translationAngle = poseToAprilTag.getTranslation().getAngle();
 
-        Rotation2d extraAngle = facingAngle.minus(s_Vision.limitRange(facingAngle));
+        Rotation2d extraAngle = facingAngle.minus(Vision.limitRange(facingAngle, -angleLimit, angleLimit));
         Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
-        Translation2d translationMinusGap = poseToAprilTag.getTranslation().minus(gap);
+        Pose2d poseToAprilTagMinusGap = new Pose2d(
+            poseToAprilTag.getTranslation().minus(gap),
+            facingAngle.minus(extraAngle)
+        );
         
-        Rotation2d difference = poseToAprilTag.getRotation().minus(s_Vision.limitRange(poseToAprilTag.getRotation()));
+        Rotation2d difference = poseToAprilTag.getRotation().minus(Vision.limitRange(poseToAprilTag.getRotation(), -angleLimit, angleLimit));
         Rotation2d kaienFinalTranslationAngle = poseToAprilTag.getRotation().minus(difference);
         Rotation2d kaienFinalFacingAngle = poseToAprilTag.getTranslation().getAngle().minus(difference);
-        Pose2d poseToAprilTagMinusGap = new Pose2d(
-            poseToAprilTag.getTranslation().minus(new Translation2d(radius, kaienFinalTranslationAngle)),
-            kaienFinalFacingAngle
-        );
+        // Pose2d poseToAprilTagMinusGap = new Pose2d(
+        //     poseToAprilTag.getTranslation().minus(new Translation2d(radius, kaienFinalTranslationAngle)),
+        //     kaienFinalFacingAngle
+        // );
 
         System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);
 

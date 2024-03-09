@@ -181,7 +181,7 @@ public class RobotContainer {
         // }).withName("InitiateAlignWithAprilTag"));
 
         kB.whileTrue(new InstantCommand(() -> {
-            if (!testCommandIsRunning && !s_Vision.getAprilTag().isEmpty()) {
+            if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
                 s_Swerve.off();
                 AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
                 testCommand = alignWithAprilTag
