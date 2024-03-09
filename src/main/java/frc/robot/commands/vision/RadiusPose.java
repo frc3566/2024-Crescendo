@@ -67,27 +67,23 @@ public class RadiusPose extends Command implements WithStatus {
 
         Rotation2d extraAngle = facingAngle.minus(Vision.limitRange(facingAngle, -angleLimit, angleLimit));
         Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
-        Pose2d poseToAprilTagMinusGap = new Pose2d(
-            poseToAprilTag.getTranslation().minus(gap),
-            facingAngle.minus(extraAngle)
-        );
-        
-        Rotation2d difference = poseToAprilTag.getRotation().minus(Vision.limitRange(poseToAprilTag.getRotation(), -angleLimit, angleLimit));
-        Rotation2d kaienFinalTranslationAngle = poseToAprilTag.getRotation().minus(difference);
-        Rotation2d kaienFinalFacingAngle = poseToAprilTag.getTranslation().getAngle().minus(difference);
+    
+        Rotation2d absoluteAngle = facingAngle.minus(translationAngle);
+        Rotation2d difference = absoluteAngle.minus(Vision.limitRange(absoluteAngle, -angleLimit, angleLimit));
+        Rotation2d finalRelativeFacingAngle = translationAngle.minus(difference);
         // Pose2d poseToAprilTagMinusGap = new Pose2d(
-        //     poseToAprilTag.getTranslation().minus(new Translation2d(radius, kaienFinalTranslationAngle)),
+        //     poseToAprilTag.getTranslation().minus(new Translation2d(radius, difference)),
         //     kaienFinalFacingAngle
         // );
 
-        System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);
-
-        Pose2d singleDimensionTranslation = new Pose2d(
-            poseToAprilTagMinusGap.getTranslation().rotateBy(poseToAprilTag.getRotation().unaryMinus()),
-            new Rotation2d()
+        Pose2d poseToAprilTagMinusGap = new Pose2d(
+            // poseToAprilTag.getTranslation().minus(gap),
+            poseToAprilTag.getTranslation().minus(new Translation2d(radius, difference)),
+            // facingAngle.minus(extraAngle)
+            finalRelativeFacingAngle
         );
 
-        System.out.println("> Translation component: " + singleDimensionTranslation);
+        System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);
 
         setTargetPose.accept(poseToAprilTagMinusGap);
         targetPoseComputed = true;
