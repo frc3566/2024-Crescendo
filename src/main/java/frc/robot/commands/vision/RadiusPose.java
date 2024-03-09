@@ -20,7 +20,12 @@ public class RadiusPose extends Command implements WithStatus {
     private boolean targetPoseComputed = false;
     private boolean isRunning = false;
 
-    private static final double radius = 2.25;
+    private static final double
+        cameraToRobotFront = 0.5,
+        speakerAprilTagGap = 1,
+        additionalGapForGoodMeasure = 0.75;
+
+    private static final double radius = cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure;
 
     public RadiusPose(Vision s_Vision, Pose2d currentPose, Consumer<Pose2d> setTargetPose) {
         this.s_Vision = s_Vision;
@@ -55,12 +60,17 @@ public class RadiusPose extends Command implements WithStatus {
 
         Pose2d poseToAprilTag = s_Vision.getPoseTo(result.get());
         System.out.println("> April Tag: " + poseToAprilTag);
-        Rotation2d radiusAngle = poseToAprilTag.getRotation().minus(s_Vision.limitRange(poseToAprilTag.getRotation()));
 
+        Rotation2d facingAngle = poseToAprilTag.getRotation();
+        Rotation2d translationAngle = poseToAprilTag.getTranslation().getAngle();
+
+        Rotation2d extraAngle = facingAngle.minus(s_Vision.limitRange(facingAngle));
+        Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
+        Translation2d translationMinusGap = poseToAprilTag.getTranslation().minus(gap);
+        
         Pose2d poseToAprilTagMinusGap = new Pose2d(
-            poseToAprilTag.getTranslation().minus(new Translation2d(
-                radius, radiusAngle)),
-            radiusAngle
+            translationMinusGap,
+            translationAngle.plus(gap.getAngle())
         );
 
         System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);

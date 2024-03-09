@@ -72,6 +72,8 @@ public class Vision extends SubsystemBase {
      * @return Optional<PhotonTrackedTarget>: The closest April Tag that matches a target fiducial id if its ambiguity < 0.2
      */
     public Optional<PhotonTrackedTarget> getAprilTag() {
+        refreshTargetFiducialIds();
+        
         var result = apriltagCamera.getLatestResult();
         List<PhotonTrackedTarget> targets = result.getTargets();
         Optional<PhotonTrackedTarget> target = Optional.empty();
