@@ -23,7 +23,7 @@ public class RadiusPose extends Command implements WithStatus {
     private static final double
         cameraToRobotFront = 0.5,
         speakerAprilTagGap = 1,
-        additionalGapForGoodMeasure = 0.75;
+        additionalGapForGoodMeasure = 0.775;
 
     private static final double radius = cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure;
     
