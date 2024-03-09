@@ -19,9 +19,9 @@ public class AlignWithAprilTag extends SequentialCommandGroup implements WithSta
     
     public AlignWithAprilTag(Swerve s_Swerve, Vision s_Vision) {
         commandsWithStatus = List.of(
-            new SupplyAprilTagPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
+            // new SupplyAprilTagPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
             // above is old code that aligns to center
-            // new RadiusPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
+            new RadiusPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
             new Drive(s_Swerve, () -> targetPose),
             new Spin(s_Swerve, () -> targetPose)
         );

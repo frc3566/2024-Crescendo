@@ -65,9 +65,8 @@ public class RadiusPose extends Command implements WithStatus {
         Rotation2d facingAngle = poseToAprilTag.getRotation();
         Rotation2d translationAngle = poseToAprilTag.getTranslation().getAngle();
 
-        Rotation2d extraAngle = facingAngle.minus(Vision.limitRange(facingAngle, -angleLimit, angleLimit));
-        Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
-    
+        // Rotation2d extraAngle = facingAngle.minus(Vision.limitRange(facingAngle, -angleLimit, angleLimit));
+        // Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
         Rotation2d absoluteAngle = facingAngle.minus(translationAngle);
         Rotation2d difference = absoluteAngle.minus(Vision.limitRange(absoluteAngle, -angleLimit, angleLimit));
         Rotation2d finalRelativeFacingAngle = translationAngle.minus(difference);
