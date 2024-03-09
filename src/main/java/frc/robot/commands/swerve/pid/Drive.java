@@ -20,6 +20,7 @@ public class Drive extends Command implements WithStatus {
     private Swerve s_Swerve;
     private Supplier<Pose2d> targetPoseSupplier;
     private Pose2d targetPose;
+    private int dt;
 
     private ProfiledPIDController driveController;
 
@@ -42,6 +43,7 @@ public class Drive extends Command implements WithStatus {
 
     @Override
     public void initialize() {
+        dt = 0;
         isRunning = true;
 
         targetPose = targetPoseSupplier.get();
@@ -57,6 +59,7 @@ public class Drive extends Command implements WithStatus {
 
     @Override
     public void execute() {
+        dt++;
         Pose2d currentPose = s_Swerve.getPose();
         System.out.println("Drive: " + currentPose);
         
@@ -66,7 +69,7 @@ public class Drive extends Command implements WithStatus {
             driveController.calculate(currentDistance, 0.0);
 
         Translation2d driveVelocity = new Translation2d(
-            driveVelocityScalar, 
+            driveVelocityScalar - Swerve.limit((s_Swerve.getCurrentSpeed()/dt), 0, driveVelocityScalar * 0.6), 
             currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
         );
 

@@ -147,6 +147,19 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public static double limit(double val, double min, double max) {
+        return Math.min(Math.max(val, min), max);
+    }
+
+    public double getCurrentSpeed() {
+        double average = 0;
+        for (SwerveModule mod : mSwerveMods) {
+            average += mod.getState().speedMetersPerSecond;
+        }
+        average /= 4;
+        return average;
+    }
+
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  
