@@ -71,6 +71,7 @@ public class RobotContainer {
 
     private final JoystickButton kY2 = new JoystickButton(driver2, XboxController.Button.kY.value);
     private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
+    private final JoystickButton kB2 = new JoystickButton(driver2, XboxController.Button.kB.value);
 
     private Command testCommand;
     private boolean testCommandIsRunning = false;
@@ -226,6 +227,7 @@ public class RobotContainer {
         kY2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
         kA2.onTrue(new InstantCommand(() -> s_Climber.setRightPower(-0.4)));
         kA2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
+        kB2.onTrue(new InstantCommand(() -> System.out.println("Auto-Align Failed. YIPPEEEEEEE!!!!")));
     }
 
     /**
