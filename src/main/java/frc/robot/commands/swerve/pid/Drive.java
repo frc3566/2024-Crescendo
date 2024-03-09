@@ -24,10 +24,11 @@ public class Drive extends Command implements WithStatus {
     private ProfiledPIDController driveController;
 
     private boolean isRunning;
+    private int dt;
 
     private static class DriveCommandConstants {
         public static final double kPXController = 4; //8
-        public static final double kMaxSpeedMetersPerSecond = 4; //5
+        public static final double kMaxSpeedMetersPerSecond = 3; //5
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
     }
 
@@ -42,6 +43,7 @@ public class Drive extends Command implements WithStatus {
 
     @Override
     public void initialize() {
+        dt = 0;
         isRunning = true;
 
         targetPose = targetPoseSupplier.get();
