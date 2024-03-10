@@ -23,11 +23,11 @@ public class RadiusPose extends Command implements WithStatus {
     private static final double
         cameraToRobotFront = 0.5,
         speakerAprilTagGap = 1,
-        additionalGapForGoodMeasure = 0.775;
+        additionalGapForGoodMeasure = 0.75;
 
     private static final double radius = cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure;
     
-    private static final double angleLimit = 45;
+    private static final double angleLimit = 30;
 
     public RadiusPose(Vision s_Vision, Pose2d currentPose, Consumer<Pose2d> setTargetPose) {
         this.s_Vision = s_Vision;
@@ -69,7 +69,7 @@ public class RadiusPose extends Command implements WithStatus {
         // Translation2d gap = new Translation2d(radius, translationAngle.minus(extraAngle));
         Rotation2d absoluteAngle = facingAngle.minus(translationAngle);
         Rotation2d difference = absoluteAngle.minus(Vision.limitRange(absoluteAngle, -angleLimit, angleLimit));
-        Rotation2d finalRelativeFacingAngle = facingAngle.minus(translationAngle.plus(difference));
+        Rotation2d finalRelativeFacingAngle = facingAngle.plus(translationAngle).plus(difference);
         // Pose2d poseToAprilTagMinusGap = new Pose2d(
         //     poseToAprilTag.getTranslation().minus(new Translation2d(radius, difference)),
         //     kaienFinalFacingAngle

@@ -25,7 +25,6 @@ public class Drive extends Command implements WithStatus {
     private ProfiledPIDController driveController;
 
     private boolean isRunning;
-    private int dt;
 
     private static class DriveCommandConstants {
         public static final double kPXController = 4; //8
@@ -70,7 +69,7 @@ public class Drive extends Command implements WithStatus {
             driveController.calculate(currentDistance, 0.0);
 
         Translation2d driveVelocity = new Translation2d(
-            driveVelocityScalar - Swerve.limit((s_Swerve.getCurrentSpeed()/dt), 0, driveVelocityScalar * 0.6), 
+            driveVelocityScalar, 
             currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle()
         );
 

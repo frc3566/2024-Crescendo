@@ -39,7 +39,7 @@ public class PrimeWhileThenShoot extends Command {
         s_Shooter.setPower(targetSpeed);
         if (timer.get() >= 0.7 && primeUntilTrue.getAsBoolean() && intakeTimer.get() == 0) {
             intakeTimer.start();
-            s_Intake.setPower(0.9);
+            s_Intake.setPower(1);
         }
     }
 
