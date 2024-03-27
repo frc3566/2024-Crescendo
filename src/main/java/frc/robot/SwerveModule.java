@@ -182,6 +182,5 @@ public class SwerveModule {
         driveEncoder.getPosition(), 
         getAngle()
     );
-    
   }
 }
