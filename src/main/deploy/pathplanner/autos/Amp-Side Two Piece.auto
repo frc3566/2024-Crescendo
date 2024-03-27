@@ -16,6 +16,12 @@
           "data": {
             "pathName": "Amp-Side Preload"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Side Pickup"
+          }
         }
       ]
     }
