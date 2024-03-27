@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -236,9 +238,9 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        return new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-0.94, Rotation2d.fromDegrees(-45)), new Rotation2d()))
-            .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-            .andThen(new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-2, 0), new Rotation2d())));
+        // return new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-0.94, Rotation2d.fromDegrees(-45)), new Rotation2d()))
+        //     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
+        //     .andThen(new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-2, 0), new Rotation2d())));
 
         // return new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-2, 0), new Rotation2d()));
             
@@ -251,5 +253,7 @@ public class RobotContainer {
         //     .andThen(new PrintCommand("Finished"));
 
         // return new Command() {};
+
+        return new PathPlannerAuto("Amp-Side Two Piece");
     }
 }
