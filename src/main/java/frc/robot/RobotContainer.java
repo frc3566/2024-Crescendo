@@ -75,7 +75,6 @@ public class RobotContainer {
     private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
     private final JoystickButton kB2 = new JoystickButton(driver2, XboxController.Button.kB.value);
 
-    private Command testCommand;
     private boolean testCommandIsRunning = false;
 
     /* Subsystems */
@@ -84,6 +83,8 @@ public class RobotContainer {
     private final Intake s_Intake = new Intake();
     private final Climber s_Climber = new Climber();
     private final Vision s_Vision;
+
+    private Command testCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() throws IOException {
@@ -183,27 +184,31 @@ public class RobotContainer {
         //     }
         // }).withName("InitiateAlignWithAprilTag"));
 
-        kB.whileTrue(new InstantCommand(() -> {
-            if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
-                s_Swerve.off();
-                AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-                testCommand = alignWithAprilTag
-                    .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-                    .finallyDo(() -> testCommandIsRunning = false)
-                    .withName("AlignWhilePriming");
+        // kB.whileTrue(new InstantCommand(() -> {
+        //     if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
+        //         s_Swerve.off();
+        //         AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
+        //         testCommand = alignWithAprilTag
+        //             .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
+        //             .finallyDo(() -> testCommandIsRunning = false)
+        //             .withName("AlignWhilePriming");
                 
-                testCommand.schedule();
-                testCommandIsRunning = true;
-            }
-        }).withName("InitiateAlignWithAprilTag").repeatedly());
+        //         testCommand.schedule();
+        //         testCommandIsRunning = true;
+        //     }
+        // }).withName("InitiateAlignWithAprilTag").repeatedly());
 
-        kA.onTrue(new InstantCommand(() -> {
-            if (testCommand != null) {
-                testCommand.cancel();
-                testCommandIsRunning = false;
-            }
-            testCommand = null;
-        }).withName("Cancel Test Command"));
+        // kA.onTrue(new InstantCommand(() -> {
+        //     if (testCommand != null) {
+        //         testCommand.cancel();
+        //         testCommandIsRunning = false;
+        //     }
+        //     testCommand = null;
+        // }).withName("Cancel Test Command"));
+
+        kA.onTrue(new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90))));
+
+        kB.onTrue(new Drive(s_Swerve, () -> new Pose2d(1, 0, new Rotation2d(0))));
 
         rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
         leftBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
