@@ -30,6 +30,18 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-side Pickup Return"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
+          }
+        },
+        {
           "type": "sequential",
           "data": {
             "commands": []

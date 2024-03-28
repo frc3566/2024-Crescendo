@@ -31,7 +31,7 @@ public class PrimeAndShoot extends Command {
     @Override
     public void execute() {
         s_Shooter.setPower(targetSpeed);
-        if (timer.get() >= 0.7) {
+        if (timer.get() >= 1) {
             s_Intake.setPower(0.9);
         }
     }
@@ -45,6 +45,6 @@ public class PrimeAndShoot extends Command {
 
     @Override 
     public boolean isFinished() {
-        return timer.get() >= 1.0;
+        return timer.get() >= 1.3;
     }
 }
