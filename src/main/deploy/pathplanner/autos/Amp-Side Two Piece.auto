@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp-Side Pickup"
