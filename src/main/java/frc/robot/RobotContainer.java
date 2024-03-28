@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -113,9 +114,8 @@ public class RobotContainer {
             )
         );
 
-        // s_Vision.setDefaultCommand(
-            // new SupplyAprilTagPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose)
-        // );
+        NamedCommands.registerCommand("PrimeAndShoot", new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+        NamedCommands.registerCommand("IntakeAndHold", new IntakeAndHold(s_Intake, s_Shooter, () -> true));
 
         s_Swerve.resetModulesToAbsolute();
 
