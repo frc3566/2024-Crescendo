@@ -128,8 +128,6 @@ public final class Constants {
           canCoderID, angleOffset);
     }
 
-    
-
     /* Back Right Module - Module 3 */
     public static final class Mod3 {
       public static final int driveMotorID = 7;

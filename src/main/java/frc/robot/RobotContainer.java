@@ -206,7 +206,7 @@ public class RobotContainer {
         //     testCommand = null;
         // }).withName("Cancel Test Command"));
 
-        kA.onTrue(new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90))));
+        kA.onTrue(new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(Math.PI))));
 
         kB.onTrue(new Drive(s_Swerve, () -> new Pose2d(1, 0, new Rotation2d(0))));
 
