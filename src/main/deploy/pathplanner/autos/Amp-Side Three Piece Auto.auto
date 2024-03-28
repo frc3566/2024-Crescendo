@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Side Pickup"
+            "pathName": "Amp-Side Close Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-side Pickup Return"
+            "pathName": "Amp-Side Close Shoot"
           }
         },
         {
@@ -36,39 +36,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Second Piece Pickup 1"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeAndHold"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Amp-Side Far 1 Pickup"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Second Piece Pickup 2"
+            "pathName": "Amp-Side Far 1 Shoot"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Second Piece Pickup 3"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Third Piece Pickup 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Third Piece Pickup 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Third Piece Pickup 3"
+            "name": "PrimeAndShoot"
           }
         }
       ]

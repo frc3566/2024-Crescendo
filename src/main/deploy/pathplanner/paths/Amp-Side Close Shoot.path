@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.37,
-        "y": 7.44
+        "x": 3.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.675484999858888,
-        "y": 7.295985827712397
+        "x": 2.111539178183377,
+        "y": 7.0
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 0.7142094469374118,
-        "y": 6.853617508160942
+        "x": 2.484821080042862,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp-Side Shoot"
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -145.0,
+    "rotation": -135.0,
     "rotateFast": false
   },
   "reversed": false,

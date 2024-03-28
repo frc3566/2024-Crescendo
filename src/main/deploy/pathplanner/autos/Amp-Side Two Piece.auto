@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Side Pickup"
+            "pathName": "Amp-Side Close Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-side Pickup Return"
+            "pathName": "Amp-Side Close Shoot"
           }
         },
         {

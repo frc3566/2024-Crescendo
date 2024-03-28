@@ -20,12 +20,12 @@
         "y": 7.0
       },
       "prevControl": {
-        "x": 1.9646446609406727,
-        "y": 6.964644660940673
+        "x": 2.05,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp-Side Shoot Preloaded"
+      "linkedName": "Amp-Side Shoot"
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -145.0,
+    "rotation": -135.0,
     "rotateFast": false
   },
   "reversed": false,
