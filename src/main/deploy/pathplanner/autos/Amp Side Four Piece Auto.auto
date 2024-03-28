@@ -36,9 +36,39 @@
           }
         },
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": []
+            "pathName": "Second Piece Pickup 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Second Piece Pickup 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Second Piece Pickup 3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece Pickup 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece Pickup 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Third Piece Pickup 3"
           }
         }
       ]
