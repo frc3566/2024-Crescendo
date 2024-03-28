@@ -1,6 +1,8 @@
 package frc.robot.commands.swerve.pid;
 
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,10 +13,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.commands.WithStatus;
 import frc.robot.subsystems.Swerve;
 
-public class Spin extends Command {
+public class Spin extends Command implements WithStatus {
     private Swerve s_Swerve;
+    private Supplier<Pose2d> targetPoseSupplier;
     private Pose2d targetPose;
 
     private ProfiledPIDController thetaController;
@@ -31,9 +35,9 @@ public class Spin extends Command {
         );
     }
 
-    public Spin(Swerve s_Swerve, Pose2d targetPose) {
+    public Spin(Swerve s_Swerve, Supplier<Pose2d> targetPoseSupplier) {
         this.s_Swerve = s_Swerve;
-        this.targetPose = targetPose;
+        this.targetPoseSupplier = targetPoseSupplier;
 
         isRunning = false;
 
@@ -43,6 +47,7 @@ public class Spin extends Command {
     @Override
     public void initialize() {
         isRunning = true;
+        targetPose = targetPoseSupplier.get();
 
         this.thetaController = new ProfiledPIDController(
             SpinCommandConstants.kPThetaController, 0, 0, SpinCommandConstants.kThetaControllerConstraints

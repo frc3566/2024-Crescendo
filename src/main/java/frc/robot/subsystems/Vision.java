@@ -17,9 +17,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
+import frc.robot.commands.vision.SupplyAprilTagPose;
 
 
 /* Make sure that 
@@ -31,17 +34,13 @@ import frc.robot.Constants;
 public class Vision extends SubsystemBase {
     private PhotonCamera apriltagCamera;
     private PhotonPoseEstimator poseEstimator;
+    private Pose2d targetPose;
 
     private static final List<Integer> BLUE_APRILTAG_IDS = List.of(7, 6, 1, 2, 14, 15, 16);
     private static final List<Integer> RED_APRILTAG_IDS = List.of(4, 5, 9, 10, 11, 12, 13);
     
     /* list of fiducial ids to look for depending on alliance */
-    private List<Integer> targetFiducialIds = DriverStation.getAlliance()
-        .map(alliance -> alliance == DriverStation.Alliance.Blue ? BLUE_APRILTAG_IDS : RED_APRILTAG_IDS)
-        .orElseGet(() -> {
-            BLUE_APRILTAG_IDS.addAll(RED_APRILTAG_IDS);
-            return BLUE_APRILTAG_IDS;
-        });
+    private List<Integer> targetFiducialIds = List.of(4);
 
     public Vision() throws IOException {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
@@ -51,6 +50,19 @@ public class Vision extends SubsystemBase {
             apriltagCamera,
             Constants.Vision.ROBOT_TO_CAMERA
         );
+
+        refreshTargetFiducialIds();
+        System.out.println("Targetting fiducial ids: " + targetFiducialIds);
+    }
+
+    public List<Integer> refreshTargetFiducialIds() {
+        DriverStation.getAlliance().map(alliance -> {
+            if (alliance == DriverStation.Alliance.Blue) { targetFiducialIds = BLUE_APRILTAG_IDS; }
+            else if (alliance == DriverStation.Alliance.Red) { targetFiducialIds = RED_APRILTAG_IDS; }
+            return null;
+        });
+
+        return targetFiducialIds;
     }
 
     /**
@@ -60,6 +72,8 @@ public class Vision extends SubsystemBase {
      * @return Optional<PhotonTrackedTarget>: The closest April Tag that matches a target fiducial id if its ambiguity < 0.2
      */
     public Optional<PhotonTrackedTarget> getAprilTag() {
+        refreshTargetFiducialIds();
+        
         var result = apriltagCamera.getLatestResult();
         List<PhotonTrackedTarget> targets = result.getTargets();
         Optional<PhotonTrackedTarget> target = Optional.empty();
@@ -76,6 +90,27 @@ public class Vision extends SubsystemBase {
         return target.map(e -> 
             e.getPoseAmbiguity() < 0.2 ? e : null
         );
+    }
+
+    public void writePose(Pose2d pose) {
+        targetPose = pose;
+    }
+
+    public static Rotation2d limitRange(Rotation2d angle, double minDegrees, double maxDegrees) {
+        return Rotation2d.fromDegrees(Math.min(Math.max(angle.getDegrees(), minDegrees), maxDegrees));
+    }
+    
+    public Pose2d getPose() {
+        return targetPose;
+    }
+
+    public void resetPose() {
+        targetPose = new Pose2d();
+        
+    }
+
+    public Command defaultCommand() {
+        return new SupplyAprilTagPose(this, new Pose2d(), this::writePose);
     }
 
     public Pose2d getPoseTo(PhotonTrackedTarget target) {

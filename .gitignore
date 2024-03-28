@@ -63,3 +63,4 @@ build/tmp/compileJava/previous-compilation-data.bin
 # ignore stuff that causes merge conflicts
 .gradle
 build
+ctre_sim
