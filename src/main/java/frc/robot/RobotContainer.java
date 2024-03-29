@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.intake.IntakeAndHold;
 import frc.robot.commands.intake.IntakeControl;
+import frc.robot.commands.intake.IntakeForAuto;
 import frc.robot.commands.intake.IntakeTimed;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -116,9 +117,9 @@ public class RobotContainer {
         );
 
         NamedCommands.registerCommand("PrimeAndShoot", new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
-        NamedCommands.registerCommand("IntakeAndHold", new IntakeAndHold(s_Intake, s_Shooter, () -> true)
-            .finallyDo(() -> new IntakeTimed(s_Intake, () -> -0.1, 0.5).schedule())
-        );
+        NamedCommands.registerCommand("Intake", new IntakeAndHold(s_Intake, s_Shooter, () -> true));
+        NamedCommands.registerCommand("ReverseIntake", new IntakeTimed(s_Intake, () -> -0.1, 0.5));
+        NamedCommands.registerCommand("IntakeForAuto", new IntakeForAuto(s_Intake, s_Shooter));
 
         s_Swerve.resetModulesToAbsolute();
 

@@ -42,12 +42,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "PrimeAndShoot"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Third Piece Pickup 1"
@@ -63,12 +57,6 @@
           "type": "path",
           "data": {
             "pathName": "Third Piece Pickup 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PrimeAndShoot"
           }
         }
       ]

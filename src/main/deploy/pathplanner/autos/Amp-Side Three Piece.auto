@@ -18,6 +18,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Amp-Side Close 1 Pickup"
@@ -36,22 +42,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeAndHold"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp-Side Far 1 Pickup"
-                }
-              }
-            ]
+            "pathName": "Amp-Side Far 1 Pickup"
           }
         },
         {

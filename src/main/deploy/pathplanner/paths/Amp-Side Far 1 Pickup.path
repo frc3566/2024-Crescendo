@@ -8,20 +8,36 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.305484999858889,
-        "y": 6.855985827712397
+        "x": 3.3062094517250395,
+        "y": 7.137288145520359
       },
       "isLocked": false,
       "linkedName": "Amp-Side Shoot"
     },
     {
       "anchor": {
-        "x": 8.373466589525785,
+        "x": 5.5,
+        "y": 7.44
+      },
+      "prevControl": {
+        "x": 4.55587320246583,
+        "y": 7.44
+      },
+      "nextControl": {
+        "x": 6.44412679753417,
+        "y": 7.44
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.37,
         "y": 7.444069323323415
       },
       "prevControl": {
-        "x": 7.087676036463197,
-        "y": 7.297686831484357
+        "x": 7.0759037206366715,
+        "y": 7.444069323323415
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,13 +46,31 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.55,
+      "waypointRelativePos": 1.1,
       "rotationDegrees": 180.0,
       "rotateFast": false
     }
   ],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 1.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
