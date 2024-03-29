@@ -3,32 +3,54 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.27,
-        "y": 5.51
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.158460821816623,
-        "y": 5.51
+        "x": 2.0,
+        "y": 6.111539178183377
+      },
+      "isLocked": false,
+      "linkedName": "Amp-Side Shoot"
+    },
+    {
+      "anchor": {
+        "x": 2.25,
+        "y": 5.56
+      },
+      "prevControl": {
+        "x": 1.8216591180150488,
+        "y": 5.56
+      },
+      "nextControl": {
+        "x": 2.3,
+        "y": 5.56
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.0,
-        "y": 5.510966887165034
+        "x": 2.8079561855738295,
+        "y": 5.559072766221342
       },
       "prevControl": {
-        "x": 3.3552246729692823,
-        "y": 5.50263034337871
+        "x": 2.7579561855738297,
+        "y": 5.559072766221342
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -43,9 +65,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Amp-Side",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -145.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

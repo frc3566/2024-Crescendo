@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.0,
-        "y": 5.51
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6491995743162142,
-        "y": 5.496544154970287
+        "x": 3.0,
+        "y": 7.0
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp-Side Shoot"
     },
     {
       "anchor": {
-        "x": 2.27,
-        "y": 5.510966887165034
+        "x": 3.0,
+        "y": 7.0
       },
       "prevControl": {
-        "x": 2.6252246729692823,
-        "y": 5.50263034337871
+        "x": 2.0,
+        "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,25 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0,
+      "command": {
+        "type": "race",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "IntakeAndHold"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -40,13 +58,13 @@
   "goalEndState": {
     "velocity": 0,
     "rotation": 180.0,
-    "rotateFast": false
+    "rotateFast": true
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Amp-Side",
   "previewStartingState": {
-    "rotation": 180.0,
+    "rotation": -145.0,
     "velocity": 0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

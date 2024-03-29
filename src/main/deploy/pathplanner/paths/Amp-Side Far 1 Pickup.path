@@ -12,7 +12,7 @@
         "y": 6.855985827712397
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Amp-Side Shoot"
     },
     {
       "anchor": {
@@ -28,7 +28,13 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 180.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -43,9 +49,9 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Amp-Side",
   "previewStartingState": {
-    "rotation": -135.0,
+    "rotation": -145.0,
     "velocity": 0
   },
   "useDefaultConstraints": false

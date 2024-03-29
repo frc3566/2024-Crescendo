@@ -18,27 +18,27 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Amp-Side Close Pickup"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp-Side Close Shoot"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "PrimeAndShoot"
           }
         },
         {
-          "type": "sequential",
+          "type": "path",
           "data": {
-            "commands": []
+            "pathName": "Amp-Side Close 1 Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Amp-Side Close 1 Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
           }
         }
       ]

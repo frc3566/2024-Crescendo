@@ -20,13 +20,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Side Close Pickup"
+            "pathName": "Amp-Side Close 1 Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Side Close Shoot"
+            "pathName": "Amp-Side Close 1 Shoot"
           }
         },
         {
@@ -38,19 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Second Piece Pickup 1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Second Piece Pickup 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Second Piece Pickup 3"
+            "pathName": "Amp-Side Close 2 Pickup"
           }
         },
         {
