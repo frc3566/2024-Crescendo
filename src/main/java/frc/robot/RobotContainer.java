@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.autos.*;
 import frc.robot.commands.intake.IntakeAndHold;
 import frc.robot.commands.intake.IntakeControl;
-import frc.robot.commands.intake.IntakeForAuto;
 import frc.robot.commands.intake.IntakeTimed;
 import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -87,6 +86,9 @@ public class RobotContainer {
     private final Climber s_Climber = new Climber();
     private final Vision s_Vision;
 
+    /* Auto Command */
+    private final Command pathPlannerAuto;
+
     private Command testCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -116,16 +118,13 @@ public class RobotContainer {
             )
         );
 
-        NamedCommands.registerCommand("PrimeAndShoot", new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
-        NamedCommands.registerCommand("Intake", new IntakeAndHold(s_Intake, s_Shooter, () -> true));
-        NamedCommands.registerCommand("ReverseIntake", new IntakeTimed(s_Intake, () -> -0.1, 0.5));
-        NamedCommands.registerCommand("IntakeForAuto", new IntakeForAuto(s_Intake, s_Shooter));
-
         s_Swerve.resetModulesToAbsolute();
 
+        configureButtonBindings();
         DriverStation.silenceJoystickConnectionWarning(true);
 
-        configureButtonBindings();
+        configurePathPlanner();
+        pathPlannerAuto = new PathPlannerAuto("Amp-Side Two Piece");
     }
 
     /**
@@ -141,78 +140,27 @@ public class RobotContainer {
         kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
         kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
         
-        // Pose2d target = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(45));
-        // Translation2d single = target.getTranslation().rotateBy(target.getRotation().unaryMinus());
-        
-        // Command initiateDriveToAprilTag = 
-        // kB.onTrue(new InstantCommand(() -> {
-        //     if (!testCommandIsRunning) {
-        //         testCommand = new AlignWithAprilTag(s_Swerve, s_Vision)
-        //             .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-        //             .finallyDo(() -> testCommandIsRunning = false)
-        //             .withName("AlignWithAprilTag");
-
-        //         testCommand.schedule();
-        //         testCommandIsRunning = true;
-        //     }
-        // }).withName("InitiateDriveToAprilTag"));
-
-        // kB.onTrue(new InstantCommand(() -> {
-        //     if (!testCommandIsRunning) {
-        //         testCommand = new GetAprilTagPose(s_Vision)
-        //             .andThen(new VisionDrive(s_Swerve, s_Vision))
-        //             .andThen(new VisionSpin(s_Swerve, s_Vision))
-        //             .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-        //             .andThen(new InstantCommand(() -> s_Vision.resetPose()))
-        //             .andThen(new PrintCommand("Finished"))
-        //             .finallyDo(() -> testCommandIsRunning = false);
-
-        //         testCommand.schedule();
-        //         testCommandIsRunning = true;
-        //     }
-        // }));
-
-        // kB.onTrue(new InstantCommand(() -> {
-        //     if (!testCommandIsRunning) {
-        //         if (!s_Vision.getAprilTag().isEmpty()) {
-        //             s_Swerve.off();
-        //             AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-        //             testCommand = alignWithAprilTag
-        //                 .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-        //                 .finallyDo(() -> testCommandIsRunning = false)
-        //                 .withName("AlignWhilePriming");
-
-        //             testCommand.schedule();
-        //             testCommandIsRunning = true;
-        //         }
-        //     }
-        // }).withName("InitiateAlignWithAprilTag"));
-
-        // kB.whileTrue(new InstantCommand(() -> {
-        //     if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
-        //         s_Swerve.off();
-        //         AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-        //         testCommand = alignWithAprilTag
-        //             .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-        //             .finallyDo(() -> testCommandIsRunning = false)
-        //             .withName("AlignWhilePriming");
+        kB.whileTrue(new InstantCommand(() -> {
+            if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
+                s_Swerve.off();
+                AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
+                testCommand = alignWithAprilTag
+                    .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
+                    .finallyDo(() -> testCommandIsRunning = false)
+                    .withName("AlignWhilePriming");
                 
-        //         testCommand.schedule();
-        //         testCommandIsRunning = true;
-        //     }
-        // }).withName("InitiateAlignWithAprilTag").repeatedly());
+                testCommand.schedule();
+                testCommandIsRunning = true;
+            }
+        }).withName("InitiateAlignWithAprilTag").repeatedly());
 
-        // kA.onTrue(new InstantCommand(() -> {
-        //     if (testCommand != null) {
-        //         testCommand.cancel();
-        //         testCommandIsRunning = false;
-        //     }
-        //     testCommand = null;
-        // }).withName("Cancel Test Command"));
-
-        kA.onTrue(new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(Math.PI))));
-
-        kB.onTrue(new Drive(s_Swerve, () -> new Pose2d(1, 0, new Rotation2d(0))));
+        kA.onTrue(new InstantCommand(() -> {
+            if (testCommand != null) {
+                testCommand.cancel();
+                testCommandIsRunning = false;
+            }
+            testCommand = null;
+        }).withName("Cancel Test Command"));
 
         rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
         leftBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
@@ -241,6 +189,12 @@ public class RobotContainer {
         kB2.onTrue(new InstantCommand(() -> System.out.println("Auto-Align Failed. YIPPEEEEEEE!!!!")));
     }
 
+    private void configurePathPlanner() {
+        NamedCommands.registerCommand("PrimeAndShoot", new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
+        NamedCommands.registerCommand("Intake", new IntakeAndHold(s_Intake, s_Shooter, () -> true));
+        NamedCommands.registerCommand("ReverseIntake", new IntakeTimed(s_Intake, () -> -0.1, 0.5));
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -263,6 +217,6 @@ public class RobotContainer {
 
         // return new Command() {};
 
-        return new PathPlannerAuto("Amp-Side Two Piece");
+        return pathPlannerAuto;
     }
 }
