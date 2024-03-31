@@ -124,7 +124,8 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         configurePathPlanner();
-        pathPlannerAuto = new PathPlannerAuto("Amp-Side Two Piece");
+        pathPlannerAuto = new PathPlannerAuto("Amp-Side Four Piece");
+        // pathPlannerAuto = new PathPlannerAuto("Test 2");
     }
 
     /**

@@ -18,21 +18,15 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "PrimeAndShoot"
+            "pathName": "Amp-Side Far 1 Pickup"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Amp-Side Close 1 Pickup"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Amp-Side Close 1 Shoot"
+            "pathName": "Amp-Side Far 1 Shoot"
           }
         },
         {

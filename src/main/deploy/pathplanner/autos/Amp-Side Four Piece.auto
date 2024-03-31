@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.67,
-      "y": 6.62
+      "x": 0.7,
+      "y": 6.55
     },
     "rotation": -120.0
   },
@@ -15,6 +15,12 @@
           "type": "path",
           "data": {
             "pathName": "Amp-Side Preload"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
           }
         },
         {
@@ -42,21 +48,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Third Piece Pickup 1"
+            "name": "ReverseIntake"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Third Piece Pickup 2"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Third Piece Pickup 3"
+            "name": "PrimeAndShoot"
           }
         }
       ]

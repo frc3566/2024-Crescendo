@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.7,
-        "y": 6.7
+        "x": 7.5,
+        "y": 7.46
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7499999999999999,
-        "y": 6.7
+        "x": 6.5,
+        "y": 7.46
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.0,
+        "x": 2.89,
         "y": 7.0
       },
       "prevControl": {
-        "x": 2.05,
+        "x": 3.552556601355688,
         "y": 7.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Amp-Side Shoot"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -145.0,
+    "rotation": 180.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "Amp-Side",
+  "folder": null,
   "previewStartingState": {
-    "rotation": -120.0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true
