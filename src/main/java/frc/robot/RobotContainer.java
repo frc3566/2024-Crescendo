@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -122,6 +123,8 @@ public class RobotContainer {
             )
         );
 
+        Timer.delay(4);
+
         s_Swerve.resetModulesToAbsolute();
 
         configureButtonBindings();
@@ -141,9 +144,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+        kY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         
-        kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
-        kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
+        // kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
+        // kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
         
         kB.whileTrue(new InstantCommand(() -> {
             if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
