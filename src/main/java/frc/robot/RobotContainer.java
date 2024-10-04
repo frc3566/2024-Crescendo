@@ -78,6 +78,7 @@ public class RobotContainer {
     private final POVButton DPadUp2 = new POVButton(driver2, 0);
     private final POVButton DPadDown2 = new POVButton(driver2, 180);
 
+    private final JoystickButton kX2 = new JoystickButton(driver2, XboxController.Button.kX.value);
     private final JoystickButton kY2 = new JoystickButton(driver2, XboxController.Button.kY.value);
     private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
     private final JoystickButton kB2 = new JoystickButton(driver2, XboxController.Button.kB.value);
@@ -94,11 +95,11 @@ public class RobotContainer {
     /* Auto Command */
     private final Command pathPlannerAuto;
 
-    private Command testCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
+    private Command alignCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
 
-    /** The container for the robot. Contains subsystems, OI devices, and commands. */
+    /** The container for the robot. Contains subsystems, IO devices, and commands. */
     public RobotContainer() throws IOException {
-        CommandScheduler.getInstance().onCommandInitialize(command -> System.out.println("Command interrupted: " + command.getName()));
+        CommandScheduler.getInstance().onCommandInitialize(command -> System.out.println("Command initialized: " + command.getName()));
         CommandScheduler.getInstance().onCommandInterrupt(command -> System.out.println("Command interrupted: " + command.getName()));
         CommandScheduler.getInstance().onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));
 
@@ -111,7 +112,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(leftThumbYID), // translation axis
                 () -> driver.getRawAxis(leftThumbXID), // strafe axis
                 () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
-                () -> kY.getAsBoolean()
+                () -> true
             )
         );
 
@@ -131,8 +132,7 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         configurePathPlanner();
-        pathPlannerAuto = new PathPlannerAuto("Amp-Side Four Piece");
-        // pathPlannerAuto = new PathPlannerAuto("Test 2");
+        pathPlannerAuto = new PathPlannerAuto("Preseason Test");
     }
 
     /**
@@ -146,30 +146,27 @@ public class RobotContainer {
         kX.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         kY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         
-        // kY.onTrue(new InstantCommand(() -> s_Intake.setPower(0.9)));
-        // kY.onFalse(new InstantCommand(() -> s_Intake.stop()));
-        
         kB.whileTrue(new InstantCommand(() -> {
             if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
                 s_Swerve.off();
                 AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
-                testCommand = alignWithAprilTag
+                alignCommand = alignWithAprilTag
                     .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
                     .finallyDo(() -> testCommandIsRunning = false)
                     .withName("AlignWhilePriming");
                 
-                testCommand.schedule();
+                alignCommand.schedule();
                 testCommandIsRunning = true;
             }
         }).withName("InitiateAlignWithAprilTag").repeatedly());
 
         kA.onTrue(new InstantCommand(() -> {
-            if (testCommand != null) {
-                testCommand.cancel();
+            if (alignCommand != null) {
+                alignCommand.cancel();
                 testCommandIsRunning = false;
             }
-            testCommand = null;
-        }).withName("Cancel Test Command"));
+            alignCommand = null;
+        }).withName("Cancel Align Command"));
 
         rightBumper.onTrue(new IntakeAndHold(s_Intake, s_Shooter, () -> rightBumper.getAsBoolean()));
         leftBumper.onTrue(new InstantCommand(() -> s_Intake.eject()));
@@ -181,10 +178,6 @@ public class RobotContainer {
         DPadDown.onFalse(new InstantCommand(() -> s_Climber.setPower(0)));
 
         DPadLeft.onTrue(new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
-        // DPadLeft.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(-0.4)));
-        // DPadLeft.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
-        // DPadRight.onTrue(new InstantCommand(() -> s_Shooter.setAmpPower(0.4)));
-        // DPadRight.onFalse(new InstantCommand(() -> s_Shooter.setAmpPower(0)));
 
         DPadUp2.onTrue(new InstantCommand(() -> s_Climber.setLeftPower(0.4)));
         DPadUp2.onFalse(new InstantCommand(() -> s_Climber.setLeftPower(0)));
@@ -195,9 +188,12 @@ public class RobotContainer {
         kY2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
         kA2.onTrue(new InstantCommand(() -> s_Climber.setRightPower(-0.4)));
         kA2.onFalse(new InstantCommand(() -> s_Climber.setRightPower(0)));
-        kB2.onTrue(new InstantCommand(() -> System.out.println("Auto-Align Failed. YIPPEEEEEEE!!!!")));
     }
 
+    /** 
+     * Use this method to configure PathPlanner settings 
+     * and expose commands to PathPlanner.
+     */
     private void configurePathPlanner() {
         AutoBuilder.configureHolonomic(
             s_Swerve::getPose, // Robot pose supplier
@@ -222,6 +218,7 @@ public class RobotContainer {
             s_Swerve // Reference to swerve subsystem to set requirements
         );
 
+        /* Register PathPlanner commands here */
         NamedCommands.registerCommand("PrimeAndShoot", new PrimeAndShoot(s_Shooter, s_Intake, 1.0));
         NamedCommands.registerCommand("Intake", new IntakeAndHold(s_Intake, s_Shooter, () -> true));
         NamedCommands.registerCommand("ReverseIntake", new IntakeTimed(s_Intake, () -> -0.1, 0.5));
@@ -233,22 +230,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // return new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-0.94, Rotation2d.fromDegrees(-45)), new Rotation2d()))
-        //     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-        //     .andThen(new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-2, 0), new Rotation2d())));
-
-        // return new Drive(s_Swerve, () -> new Pose2d(new Translation2d(-2, 0), new Rotation2d()));
-            
-        // return new Drive(s_Swerve, () -> new Pose2d(-1, 0, new Rotation2d()))
-        //     .andThen(new GetAprilTagPose(s_Vision))
-        //     .andThen(new VisionDrive(s_Swerve, s_Vision))
-        //     .andThen(new VisionSpin(s_Swerve, s_Vision))
-        //     .andThen(new PrimeAndShoot(s_Shooter, s_Intake, 1.0))
-        //     .andThen(new InstantCommand(() -> s_Vision.resetPose()))
-        //     .andThen(new PrintCommand("Finished"));
-
-        // return new Command() {};
-
         return pathPlannerAuto;
     }
 }

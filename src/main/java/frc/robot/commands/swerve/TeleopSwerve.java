@@ -16,7 +16,7 @@ public class TeleopSwerve extends Command {
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
-    private BooleanSupplier robotCentricSup;
+    private BooleanSupplier fieldRelativeSup;
 
     public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
         this.s_Swerve = s_Swerve;
@@ -25,21 +25,19 @@ public class TeleopSwerve extends Command {
         this.translationSup = translationSup;
         this.strafeSup = strafeSup;
         this.rotationSup = rotationSup;
-        this.robotCentricSup = robotCentricSup;
+        this.fieldRelativeSup = robotCentricSup;
     }
 
     @Override
     public void execute() {
-        /* Get Values, Deadband*/
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.Swerve.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.Swerve.stickDeadband);
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Swerve.stickDeadband);
 
-        /* Drive */
         s_Swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity, 
-            !robotCentricSup.getAsBoolean(), 
+            fieldRelativeSup.getAsBoolean(), 
             true
         );
     }
