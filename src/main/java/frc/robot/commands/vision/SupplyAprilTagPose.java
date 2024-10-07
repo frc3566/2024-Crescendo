@@ -6,9 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.commands.WithStatus;
-import frc.robot.commands.swerve.pid.Drive;
-import frc.robot.commands.swerve.pid.Spin;
 import frc.robot.subsystems.Vision;
 
 public class SupplyAprilTagPose extends Command implements WithStatus {
@@ -17,8 +16,10 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
     private Consumer<Pose2d> setTargetPose;
 
     private int counter = 0;
-    private boolean targetPoseComputed = false;
+    private boolean targetPoseSet = false;
     private boolean isRunning = false;
+
+    public static final int MAX_CYCLE_COUNT = 10;
 
     private static final double
         cameraToRobotFront = 0.5,
@@ -33,7 +34,7 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
 
     @Override
     public void initialize() {
-        targetPoseComputed = false;
+        targetPoseSet = false;
         isRunning = true;
         counter = 0;
     }
@@ -41,14 +42,15 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
     /* TODO: take currentPose into account */
     @Override
     public void execute() {
-        if (targetPoseComputed) { return; }
+        if (targetPoseSet) { return; }
 
-        if (counter > 10) { this.cancel(); }
+        if (counter > MAX_CYCLE_COUNT) { this.cancel(); }
 
         var result = s_Vision.getAprilTag();
         
         if (result.isEmpty()) {
-            System.out.println("Cycle: " + ++counter);
+            counter += 1;
+            System.out.println("Cycle: " + counter);
             return;
         }
 
@@ -75,7 +77,7 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
         System.out.println("> Translation component: " + singleDimensionTranslation);
 
         setTargetPose.accept(poseToAprilTagMinusGap);
-        targetPoseComputed = true;
+        targetPoseSet = true;
     }
 
     @Override
@@ -85,7 +87,7 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
 
     @Override
     public boolean isFinished() {
-        return targetPoseComputed;
+        return targetPoseSet;
     }
 
     @Override

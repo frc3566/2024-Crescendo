@@ -1,8 +1,7 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.util.function.DoubleSupplier;
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -13,7 +12,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -22,21 +20,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 import frc.robot.autos.*;
 import frc.robot.commands.intake.IntakeAndHold;
-import frc.robot.commands.intake.IntakeControl;
 import frc.robot.commands.intake.IntakeTimed;
-import frc.robot.commands.swerve.Reset;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.swerve.pid.*;
 import frc.robot.commands.vision.AlignWithAprilTag;
-// import frc.robot.commands.vision.DriveToAprilTag;
-import frc.robot.commands.vision.GetAprilTagPose;
-import frc.robot.commands.vision.SupplyAprilTagPose;
 import frc.robot.commands.shooter.PrimeAndShoot;
 import frc.robot.commands.shooter.PrimeWhileThenShoot;
 import frc.robot.commands.shooter.TeleopShoot;
@@ -112,7 +104,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(leftThumbYID), // translation axis
                 () -> driver.getRawAxis(leftThumbXID), // strafe axis
                 () -> -driver.getRawAxis(rightThumbXID),  // rotation axis
-                () -> true
+                () -> true // always field relative
             )
         );
 
@@ -195,27 +187,29 @@ public class RobotContainer {
      * and expose commands to PathPlanner.
      */
     private void configurePathPlanner() {
-        AutoBuilder.configureHolonomic(
-            s_Swerve::getPose, // Robot pose supplier
-            s_Swerve::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-            s_Swerve::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            s_Swerve::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                /* TODO: tune pid constants */
-                new PIDConstants(4.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(6.0, 0.0, 0.0), // Rotation PID constants
-                Constants.AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-                Constants.Swerve.wheelBase * Math.sqrt(2) / 2, // Drive base radius in meters. Distance from robot center to furthest module.
-                new ReplanningConfig() // Default path replanning config. See the API for the options here
-            ),
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+        var translationPID = new PIDConstants(4.0, 0.0, 0.0);
+        var rotationPID = new PIDConstants(6.0, 0.0, 0.0);
+        var centerToFurthestModule = Constants.Swerve.wheelBase * Math.sqrt(2) / 2;
 
-              return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red;
-            },
-            s_Swerve // Reference to swerve subsystem to set requirements
+        var config = new HolonomicPathFollowerConfig(
+            translationPID,
+            rotationPID,
+            Constants.AutoConstants.kMaxSpeedMetersPerSecond, 
+            centerToFurthestModule, 
+            new ReplanningConfig() 
+        );
+
+        /* Paths should be flipped if we are on Red Alliance side */
+        BooleanSupplier shouldFlipPath = () -> { return DriverStation.getAlliance().orElse(null) == DriverStation.Alliance.Red; };
+
+        AutoBuilder.configureHolonomic(
+            s_Swerve::getPose, 
+            s_Swerve::resetOdometry, 
+            s_Swerve::getRobotRelativeSpeeds, 
+            s_Swerve::driveRobotRelative, 
+            config,
+            shouldFlipPath,
+            s_Swerve
         );
 
         /* Register PathPlanner commands here */

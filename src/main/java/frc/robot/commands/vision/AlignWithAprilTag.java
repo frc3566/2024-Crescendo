@@ -1,7 +1,5 @@
 package frc.robot.commands.vision;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,8 +18,6 @@ public class AlignWithAprilTag extends SequentialCommandGroup implements WithSta
     public AlignWithAprilTag(Swerve s_Swerve, Vision s_Vision) {
         commandsWithStatus = List.of(
             new SupplyAprilTagPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
-            // above is old code that aligns to center
-            // new RadiusPose(s_Vision, new Pose2d(), (pose) -> targetPose = pose),
             new Drive(s_Swerve, () -> targetPose),
             new Spin(s_Swerve, () -> targetPose)
         );
