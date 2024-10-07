@@ -1,0 +1,55 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.505285333337237,
+      "y": 7.471418995431652
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 1 Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Far 2 Back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PrimeAndShoot"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
