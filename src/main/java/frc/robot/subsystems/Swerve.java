@@ -54,10 +54,22 @@ public class Swerve extends SubsystemBase {
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
     }
 
+    /**
+     * 
+     * Drive command that runs on 20ms loop.
+     * 
+     * @param translation Passing the Joystick X and Y axis values with a translation, converted to speed. 
+     * Not the translation the swerve will perform.
+     * @param rotation Joystick rotation value which is converted to speed. Not the rotation the swerve will perform.
+     * @param fieldRelative Toggles field-centric and robot-centric. Leave this as true (depends on driver preference).
+     * @param isOpenLoop Toggles open-loop to closed-loop system. Set to true if using joystick input.
+     * Set to false for autonomous routines or other swerve classes.
+     */
+
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
-                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds( 
                                     translation.getX(), 
                                     translation.getY(), 
                                     rotation, 
