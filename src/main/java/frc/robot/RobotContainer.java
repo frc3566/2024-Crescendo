@@ -90,7 +90,7 @@ public class RobotContainer {
     private Command alignCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
 
     /** The container for the robot. Contains subsystems, IO devices, and commands. */
-    public RobotContainer() throws IOException {
+    public RobotContainer() {
         CommandScheduler.getInstance().onCommandInitialize(command -> System.out.println("Command initialized: " + command.getName()));
         CommandScheduler.getInstance().onCommandInterrupt(command -> System.out.println("Command interrupted: " + command.getName()));
         CommandScheduler.getInstance().onCommandFinish(command -> System.out.println("Command finished: " + command.getName()));

@@ -1,13 +1,10 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonUtils;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -17,7 +14,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -42,7 +38,7 @@ public class Vision extends SubsystemBase {
     /* list of fiducial ids to look for depending on alliance */
     private List<Integer> targetFiducialIds = List.of(4);
 
-    public Vision() throws IOException {
+    public Vision() {
         apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
         poseEstimator = new PhotonPoseEstimator(
             Constants.Vision.APRIL_TAG_FIELD_LAYOUT,
