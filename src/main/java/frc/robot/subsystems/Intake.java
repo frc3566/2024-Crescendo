@@ -13,7 +13,6 @@ public class Intake extends SubsystemBase {
     public double rtrigger;
 
     public Intake() {
-        // sensor = new DigitalInput(0);
         intakeMotor = new CANSparkMax(Constants.Intake.Intake_Motor_Id, MotorType.kBrushless);
         intakeMotor.setInverted(false);
         intakeMotor.setSmartCurrentLimit(60);
@@ -22,21 +21,6 @@ public class Intake extends SubsystemBase {
     public void setPower(double power) {
         intakeMotor.set(power);
     }
-
-    // public boolean getSensor() {
-    //     return !sensor.get(); //Return 1 if object is closer than the set distance
-    // }
-
-    // public void setVoltage(double voltage) {
-    //     left.setVoltage(voltage);
-    //     right.setVoltage(voltage);
-    // }
-
-    // public void setBrake(boolean isBrake) {
-    //     IdleMode sparkMode = isBrake ? IdleMode.kBrake : IdleMode.kCoast;
-    //     left.setIdleMode(sparkMode);
-    //     right.setIdleMode(sparkMode);
-    // }
 
     public void takeIn(){
         intakeMotor.set(1);
