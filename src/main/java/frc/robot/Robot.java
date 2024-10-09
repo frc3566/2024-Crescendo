@@ -34,14 +34,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // CameraServer.startAutomaticCapture();
     ctreConfigs = new CTREConfigs();
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    try {
-      m_robotContainer = new RobotContainer();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
+    m_robotContainer = new RobotContainer();
   }
   
 
