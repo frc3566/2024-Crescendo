@@ -13,7 +13,7 @@ public class Intake extends SubsystemBase {
     public double rtrigger;
 
     public Intake() {
-        intakeMotor = new CANSparkMax(Constants.Intake.Intake_Motor_Id, MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(Constants.Intake.intakeMotorID, MotorType.kBrushless);
         intakeMotor.setInverted(false);
         intakeMotor.setSmartCurrentLimit(60);
     }

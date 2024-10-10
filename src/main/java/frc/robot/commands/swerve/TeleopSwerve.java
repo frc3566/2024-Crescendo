@@ -35,7 +35,7 @@ public class TeleopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.Swerve.stickDeadband);
 
         s_Swerve.drive(
-            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeedMetersPerSecond), 
             rotationVal * Constants.Swerve.maxAngularVelocity, 
             fieldRelativeSup.getAsBoolean(), 
             true

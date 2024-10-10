@@ -39,12 +39,12 @@ public class Vision extends SubsystemBase {
     private List<Integer> targetFiducialIds = List.of(4);
 
     public Vision() {
-        apriltagCamera = new PhotonCamera(Constants.Vision.APRIL_TAG_CAMERA_NAME);
+        apriltagCamera = new PhotonCamera(Constants.Vision.aprilTagCameraName);
         poseEstimator = new PhotonPoseEstimator(
-            Constants.Vision.APRIL_TAG_FIELD_LAYOUT,
+            Constants.Vision.aprilTagFieldLayout,
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
             apriltagCamera,
-            Constants.Vision.ROBOT_TO_CAMERA
+            Constants.Vision.robotToCamera
         );
 
         refreshTargetFiducialIds();

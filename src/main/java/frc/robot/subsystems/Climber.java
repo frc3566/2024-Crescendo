@@ -9,8 +9,8 @@ public class Climber {
     public CANSparkMax rightClimber;
 
     public Climber() {
-        leftClimber = new CANSparkMax(Constants.Climber.Left_Climber_Id, MotorType.kBrushless);
-        rightClimber = new CANSparkMax(Constants.Climber.Right_Climber_Id, MotorType.kBrushless);
+        leftClimber = new CANSparkMax(Constants.Climber.leftClimberID, MotorType.kBrushless);
+        rightClimber = new CANSparkMax(Constants.Climber.rightClimberID, MotorType.kBrushless);
         leftClimber.setInverted(false);
         rightClimber.setInverted(false);
         leftClimber.setSmartCurrentLimit(40);
