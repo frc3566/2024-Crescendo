@@ -70,7 +70,8 @@ public class Swerve extends SubsystemBase {
                                     translation.getX(), 
                                     translation.getY(), 
                                     rotation)
-                                );
+            );
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeedMetersPerSecond);
 
         for(SwerveModule mod : mSwerveMods){
@@ -79,9 +80,7 @@ public class Swerve extends SubsystemBase {
     }  
     
     public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
-        SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(chassisSpeeds);
-
+        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeedMetersPerSecond);
 
         for(SwerveModule mod : mSwerveMods){

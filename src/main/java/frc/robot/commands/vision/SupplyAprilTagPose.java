@@ -45,7 +45,7 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
         if (targetPoseSet) { return; }
 
         if (counter > MAX_CYCLE_COUNT) { this.cancel(); }
-
+        
         var result = s_Vision.getAprilTag();
         
         if (result.isEmpty()) {
@@ -53,8 +53,6 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
             System.out.println("Cycle: " + counter);
             return;
         }
-
-        System.out.println("Cycle: " + counter);
 
         s_Vision.printAllResults();
 
@@ -66,14 +64,12 @@ public class SupplyAprilTagPose extends Command implements WithStatus {
                 cameraToRobotFront + speakerAprilTagGap + additionalGapForGoodMeasure, poseToAprilTag.getRotation())),
             poseToAprilTag.getRotation()
         );
-
         System.out.println("> April Tag minus gap: " + poseToAprilTagMinusGap);
 
         Pose2d singleDimensionTranslation = new Pose2d(
             poseToAprilTagMinusGap.getTranslation().rotateBy(poseToAprilTag.getRotation().unaryMinus()),
             new Rotation2d()
         );
-
         System.out.println("> Translation component: " + singleDimensionTranslation);
 
         setTargetPose.accept(poseToAprilTagMinusGap);

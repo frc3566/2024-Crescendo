@@ -74,7 +74,7 @@ public class RobotContainer {
     private final JoystickButton kA2 = new JoystickButton(driver2, XboxController.Button.kA.value);
     private final JoystickButton kB2 = new JoystickButton(driver2, XboxController.Button.kB.value);
 
-    private boolean testCommandIsRunning = false;
+
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
@@ -85,8 +85,8 @@ public class RobotContainer {
 
     /* Auto Command */
     private final Command pathPlannerAuto;
-
     private Command alignCommand = new Spin(s_Swerve, () -> new Pose2d(0, 0, new Rotation2d(90)));
+    private boolean alignCommandIsRunning = false;
 
     /** The container for the robot. Contains subsystems, IO devices, and commands. */
     public RobotContainer() {
@@ -115,8 +115,10 @@ public class RobotContainer {
             )
         );
 
+        /* By pausing init for a second before setting module offsets, we avoid a bug with inaccurate encoder readouts.
+         * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
+         */
         Timer.delay(4);
-
         s_Swerve.resetModulesToAbsolute();
 
         configureButtonBindings();
@@ -138,23 +140,23 @@ public class RobotContainer {
         kY.onTrue(new InstantCommand(() -> s_Swerve.resetModulesToAbsolute()));
         
         kB.whileTrue(new InstantCommand(() -> {
-            if (!testCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
+            if (!alignCommandIsRunning && s_Vision.getAprilTag().isPresent()) {
                 s_Swerve.off();
                 AlignWithAprilTag alignWithAprilTag = new AlignWithAprilTag(s_Swerve, s_Vision);
                 alignCommand = alignWithAprilTag
                     .alongWith(new PrimeWhileThenShoot(s_Shooter, s_Intake, 1, () -> !alignWithAprilTag.isRunning()))
-                    .finallyDo(() -> testCommandIsRunning = false)
+                    .finallyDo(() -> alignCommandIsRunning = false)
                     .withName("AlignWhilePriming");
                 
                 alignCommand.schedule();
-                testCommandIsRunning = true;
+                alignCommandIsRunning = true;
             }
         }).withName("InitiateAlignWithAprilTag").repeatedly());
 
         kA.onTrue(new InstantCommand(() -> {
             if (alignCommand != null) {
                 alignCommand.cancel();
-                testCommandIsRunning = false;
+                alignCommandIsRunning = false;
             }
             alignCommand = null;
         }).withName("Cancel Align Command"));
