@@ -8,6 +8,10 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * Variation of PrimeAndShoot that allows shooter to continuously run until the BooleanSupplier primeUntilTrue returns true.
+ * Allows shooter to accelerate to max speed while swerve aligns so the intake can run on command.
+ */
 public class PrimeWhileThenShoot extends Command {
     private Shooter s_Shooter;
     private Intake s_Intake;

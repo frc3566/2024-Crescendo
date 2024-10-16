@@ -7,6 +7,10 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
+/**
+ * Command to shoot a piece. 
+ * Allows shooter to accelerate for 1 second before the intake feeds the piece into the shooter.
+ */
 public class PrimeAndShoot extends Command {
     private Shooter s_Shooter;
     private Intake s_Intake;

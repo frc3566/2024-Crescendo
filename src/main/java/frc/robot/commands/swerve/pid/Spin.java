@@ -16,6 +16,10 @@ import frc.robot.Constants;
 import frc.robot.commands.WithStatus;
 import frc.robot.subsystems.Swerve;
 
+/**
+ * Custom command to rotate swerve to a target rotation, utilizing drive() from the Swerve subsystem. 
+ * Calculates the velocity of rotation using PID from the supplied final pose.
+ */
 public class Spin extends Command implements WithStatus {
     private Swerve s_Swerve;
     private Supplier<Pose2d> targetPoseSupplier;
