@@ -125,7 +125,8 @@ public class RobotContainer {
         DriverStation.silenceJoystickConnectionWarning(true);
 
         configurePathPlanner();
-        pathPlannerAuto = new PathPlannerAuto("Preseason Test");
+        // pathPlannerAuto = new PathPlannerAuto("Preseason Test");
+        pathPlannerAuto = null;
     }
 
     /**
